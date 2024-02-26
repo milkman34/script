@@ -1,0 +1,674 @@
+// ==UserScript==
+// @name         Scc mod 5.4
+// @version      5.4
+// @author       Love Cookie🍪 & :: fkwwe ::
+// @description  idk what write
+// @match        *://*.moomoo.io/*
+// @require      https://cdn.jsdelivr.net/npm/msgpack-lite@0.1.26/dist/msgpack.min.js
+// @grant        none
+// @icon         https://cdn.discordapp.com/attachments/664899301247287298/878019963900817448/743a8ebae02a90a9b147c97fb03faff4.jpg
+// ==/UserScript==
+
+                                                                                                                                                                                                                                                     /*
+
+Scc Mod Updates:
+
+v0.1 make own code.
+
+v0.2 make triple mills.
+
+v0.3 make auto-healing.
+
+v0.4 make instakill(bugged).
+
+v0.5 fixed instakill.
+
+v0.6 make instakill faster.
+
+v0.7 added hat macro.
+
+v0.8 fixed hat macro.
+
+v0.9 finished maked stack insta.
+
+v1.0 update heal.
+
+v1.1 make triple mills faster and better.
+
+v1.2 added cool health bar.
+
+v1.3 fixed health bar.
+
+v1.4 fixed heal faster.
+
+v1.5 update insta code.
+
+v1.6 added: biome-map.
+
+v1.7 added: night mode.
+
+v1.8 update visuals.
+
+v1.9 added button visuals.
+
+v2.0 added: big store.
+
+v2.1 update visuals: delete grid
+
+v2.2 added: Auto GG/EZ chat
+
+v2.3 update main code
+
+v2.4 added: anti-insta
+
+v2.5 fixed anti-insta
+
+v2.6 update insta
+
+v2.7 make insta better
+
+v2.8 update anti-insta
+
+v2.9 fixing-anti insta(in progress)
+
+v3.0 full remake instakill
+
+v3.1 fixed instakill
+
+v3.2 update instakill
+
+v3.3 make instakill stacked
+
+v3.4 added: Unequip Monkey Tile On Instakill
+
+v3.5 added: Monkey Tile After Instakill
+
+v3.6 adde new macro
+
+v3.7 added monkey tile on macro
+
+v3.8 added Corrupt X Wings on Tank(In macro)
+
+v3.9 fixed Anti-Insta(Bugged)
+
+v4.0 may Be Finnaly Fixed Anti-Insta(Not Bugged)
+
+v4.1 remake Timeout in Anti-insta
+
+v4.2 update heal(no fast clown)
+
+v4.3 update main code
+
+v4.4 update triple mills code
+
+v4.5 fixed heal
+
+v4.6 aded Panda Hat after insta
+
+v4.7 fixed soldier on insta after panda hat
+
+v4.8 update insta spped secondary
+
+v4.9 update insta speed primary
+
+v5.0 finnaly maked stacked insta
+
+v5.1 aded kill chat
+
+v5.2 fixed kill chat 0_0
+
+v5.3 aded 2nd message on GG/EZ chat
+
+v5.4 fixed 2nd message Timeout(() => {
+
+:D
+
+
+                                                                                                 // CODE IS HERE \\
+                                                                                                                                                                                                                                                                                       */
+
+
+// VISUALS AND UI \\
+$("#mapDisplay").css({background: `url('https://i.imgur.com/fgFsQJp.png')`});
+document.getElementById('enterGame').innerHTML = '🍪Love Cookie🍪';
+document.getElementById('nameInput').placeholder = "🍪Name🍪";
+document.getElementById("gameName").outerHTML='<div id="gameName" style="padding: 40px;">\n   <span style="text-shadow: none"></span><span style="text-shadow: none;color: black;background: url(&quot;https://htmlcolorcodes.com/assets/images/colors/orange-color-solid-background-1920x1080.png&quot;);border-radius: 60px;background-size: 300px 100px;">Scc Mod</span>\n</div>';
+document.getElementById('loadingText').innerHTML = '🍪';
+document.getElementById('chatBox').placeholder = "";
+document.getElementById('diedText').innerHTML = '';
+document.getElementById('diedText').style.color = "Black";
+$('#leaderboard').append('Scc Mod');
+// HEALTH BAR \\
+CanvasRenderingContext2D.prototype.roundRect = ((oldFunc) => function() { if (this.fillStyle == "#8ecc51") this.fillStyle = `hsl(240, 100%, 50%)`; return oldFunc.call(this, ...arguments); })(CanvasRenderingContext2D.prototype.roundRect);
+// BIG STORE \\
+document.getElementById("storeHolder").style = "height: 1500px; width: 450px;"
+document.getElementById('adCard').remove();
+document.getElementById('errorNotification').remove();
+// BUTTON VISUALS \\
+document.getElementById("leaderboard").style.color = "#000080";
+document.getElementById("setupCard").style.color = "#000080";
+document.getElementById("promoImg").remove();
+document.getElementById("scoreDisplay").style.color = "#000080";
+document.getElementById("woodDisplay").style.color = "#000080";
+document.getElementById("stoneDisplay").style.color = "#000080";
+document.getElementById("killCounter").style.color = "#000080";
+document.getElementById("foodDisplay").style.color = "#000080";
+document.getElementById("ageText").style.color = "#000080";
+document.getElementById("allianceButton").style.color = "#000080";
+document.getElementById("chatButton").style.color = "#000080";
+document.getElementById("storeButton").style.color = "#000080";
+let nightMode = document.createElement("div");
+// NIGHT \\
+nightMode.id = "nightMode";
+document.body.appendChild(nightMode);
+nightMode.style.display = "block";
+nightMode.style.position = "absolute";
+nightMode.style.pointerEvents = "none";
+nightMode.style.backgroundColor = "rgb(0, 0, 100)";
+nightMode.style.opacity = "0.30";
+nightMode.style.top = "0%";
+nightMode.style.width = "100%";
+nightMode.style.height = "100%";
+
+
+// MACRO \\
+setInterval(() => window.follmoo && follmoo(), 10);
+
+function Hat(id){
+    storeEquip(id);
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.keyCode == 66 && document.activeElement.id.toLowerCase() !== 'chatbox') { // B-Solider
+        Hat(6);
+    }
+    if (e.keyCode == 16 && document.activeElement.id.toLowerCase() !== 'chatbox') { // SHIFT-Booster
+        Hat(12);
+    }
+    if (e.keyCode == 89 && document.activeElement.id.toLowerCase() !== 'chatbox') { // Y-Flipper
+        Hat(31);
+    }
+    if (e.keyCode == 90 && document.activeElement.id.toLowerCase() !== 'chatbox') { // Z-Tank
+        Hat(40);
+    }
+    if (e.keyCode == 74 && document.activeElement.id.toLowerCase() !== 'chatbox') { // J-Emp
+        Hat(22);
+    }
+});
+
+// MAINCODE \\
+  let ws;
+  let x = 0;
+  let y = 0;
+  let msgpack5 = window.msgpack;
+  let scale = 45;
+  let placeOffset = 5;
+  let cmds = {
+   autoheal: false,
+   automill: false
+  }
+  let inv = {
+    primary: null,
+    secondary: null,
+    food: null,
+    wall: null,
+    spike: null,
+    mill: null,
+    mine: null,
+    boostPad: null,
+    trap: null,
+    turret: null,
+    spawnpad: null
+  };
+
+  let myPlayer = {
+    sid: null,
+    hp: null,
+    x: null,
+    y: null,
+    dir: null,
+    buildIndex: null,
+    weaponIndex: null,
+    weaponVariant: null,
+    team: null,
+    isLeader: null,
+    skinIndex: null,
+    tailIndex: null,
+    iconIndex: null
+  };
+  let enemy;
+  let nearestEnemy;
+  let enemyInf = { hat: null, x: null, y: null, weaponIndex: null}
+
+  document.msgpack = window.msgpack;
+  WebSocket.prototype.oldSend = WebSocket.prototype.send;
+  WebSocket.prototype.send = function (e) {
+    ws || (document.ws = this, ws = this, document.ws.addEventListener("message", hookWS));
+    this.oldSend(e);
+  };
+  function dist(a, b){
+    return Math.sqrt( Math.pow((b.y-a[2]), 2) + Math.pow((b.x-a[1]), 2) );
+  }
+  let join = message => Array.isArray(message) ? [...message] : [...message];
+  let hookWS = ms => {
+    let tmpData = msgpack5.decode(new Uint8Array(ms.data));
+    let data;
+    if(tmpData.length > 1) { data = [tmpData[0], ...tmpData[1]]; if (data[1] instanceof Array){ data = data } } else { data = tmpData }
+    let item = data[0];
+    if(!data) {return};
+
+    if (item == "C" && myPlayer.sid == null){
+        myPlayer.sid = data[1];
+    }
+    if(item == "O" && data[1] == myPlayer.sid) {
+        let hp = data[2]
+       if (hp < 97) {
+        let c;
+        // ANTI-INSTA CODE \\
+        if (hp < 86) c = 5;
+           if (hp < 50) c = 5;
+           storeEquip(22, 0);
+           setTimeout(() => {
+           storeEquip(6, 0);
+           }, 500);
+        if (hp < 86) c = 5;
+        for (let i=4;i<c;i++) { place(inv.food) }
+       }
+    }
+    if (item == "a") {
+        enemy = [];
+        for(let i = 4; i < data[1].length / 13; i++) {
+            let inf = data[1].slice(13*i, 13*i+13);
+            if(inf[0] == myPlayer.sid) {
+                myPlayer.x = inf[1];
+                myPlayer.y = inf[2];
+                myPlayer.dir = inf[3];
+                myPlayer.buildIndex = inf[4];
+                myPlayer.weaponIndex = inf[5];
+                myPlayer.weaponVariant = inf[6];
+                myPlayer.team = inf[7];
+                myPlayer.isLeader = inf[8];
+                myPlayer.skinIndex = inf[9];
+                myPlayer.tailIndex = inf[10];
+                myPlayer.iconIndex = inf[11];
+
+            } else if(inf[7] != myPlayer.team || inf[7] === null) {
+                enemy.push(inf);
+            }
+        }
+    }
+   if (enemy) {
+        nearestEnemy = enemy.sort((a, b) => dist(a, myPlayer) - dist(b, myPlayer))[0];
+    }
+   if (nearestEnemy) {
+      enemyInf.weaponIndex = nearestEnemy[5]
+      enemyInf.hat = nearestEnemy[9]
+      enemyInf.x = nearestEnemy[1]
+      enemyInf.y = nearestEnemy[2]
+   }
+   if (y !== myPlayer.y || x !== myPlayer.x) {
+           if (cmds.automill) {
+            let angle = Math.atan2(y - myPlayer.y, x - myPlayer.x);
+            place(inv.mill, angle + Math.PI / 2.5);
+            place(inv.mill, angle);
+            place(inv.mill, angle - Math.PI / 2.5);
+          }
+          x = myPlayer.x;
+          y = myPlayer.y;
+        }
+      refresh();
+    }
+  var repeater = function(key, action, interval) {
+    let _isKeyDown = false;
+    let _intervalId = undefined;
+    return {
+        start(keycode) {
+            if(keycode == key && document.activeElement.id.toLowerCase() !== 'chatbox') {
+                _isKeyDown = true;
+                if(_intervalId === undefined) {
+                    _intervalId = setInterval(() => {
+                        action();
+                        if(!_isKeyDown){
+                            clearInterval(_intervalId);
+                            _intervalId = undefined;
+  } }, interval) } } }, stop(keycode) { if(keycode == key && document.activeElement.id.toLowerCase() !== 'chatbox') { _isKeyDown = false; } } } }
+
+
+  const emit = (e, a, b, c, m, r) => ws.send(Uint8Array.from([...msgpack5.encode([e, [a, b, c, m, r]])]));
+  const place = (e, l) => {
+    emit("G", e, false);
+    emit("d", 1, l);
+    emit("d", 0, l);
+    emit("G", myPlayer.weaponIndex, true);
+  };
+  function chat(msg) { emit("6", msg); }
+  function hat(id) { emit("c", myPlayer.skinIndex, id, 0) }
+  function acc(id) { emit("c", myPlayer.tailIndex, id, 1) }
+  function weapon(e) {
+   if (e === 'weapon[0]') { emit("G", inv.primary, true); }
+   if (e === 'weapon[1]') { emit("G", inv.secondary, true) }
+  }
+  function hit(e) {
+   if (e == true || e == false) emit("K", true)
+  }
+
+  const refresh = () => {
+    for (let c = 0; c < 9; c++) {
+      var _document$getElementB;
+      if (((_document$getElementB = document.getElementById(`actionBarItem${c}`)) === null || _document$getElementB === void 0 ? void 0 : _document$getElementB.offsetParent) !== null) {
+        inv.primary = c;
+      }
+    }
+    for (let s = 9; s < 16; s++) {
+      var _document$getElementB2;
+      if (((_document$getElementB2 = document.getElementById(`actionBarItem${s}`)) === null || _document$getElementB2 === void 0 ? void 0 : _document$getElementB2.offsetParent) !== null) {
+        inv.secondary = s;
+      }
+    }
+    for (let P = 16; P < 19; P++) {
+      var _document$getElementB3;
+      if (((_document$getElementB3 = document.getElementById(`actionBarItem${P}`)) === null || _document$getElementB3 === void 0 ? void 0 : _document$getElementB3.offsetParent) !== null) {
+        inv.food = P - 16;
+      }
+    }
+    for (let f = 19; f < 22; f++) {
+      var _document$getElementB4;
+      if (((_document$getElementB4 = document.getElementById(`actionBarItem${f}`)) === null || _document$getElementB4 === void 0 ? void 0 : _document$getElementB4.offsetParent) !== null) {
+        inv.wall = f - 16;
+      }
+    }
+    for (let _ = 22; _ < 26; _++) {
+      var _document$getElementB5;
+      if (((_document$getElementB5 = document.getElementById(`actionBarItem${_}`)) === null || _document$getElementB5 === void 0 ? void 0 : _document$getElementB5.offsetParent) !== null) {
+        inv.spike = _ - 16;
+      }
+    }
+    for (let u = 26; u < 29; u++) {
+      var _document$getElementB6;
+      if (((_document$getElementB6 = document.getElementById(`actionBarItem${u}`)) === null || _document$getElementB6 === void 0 ? void 0 : _document$getElementB6.offsetParent) !== null) {
+        inv.mill = u - 16;
+      }
+    }
+    for (let I = 29; I < 31; I++) {
+      var _document$getElementB7;
+      if (((_document$getElementB7 = document.getElementById(`actionBarItem${I}`)) === null || _document$getElementB7 === void 0 ? void 0 : _document$getElementB7.offsetParent) !== null) {
+        inv.mine = I - 16;
+      }
+    }
+    for (let p = 31; p < 33; p++) {
+      var _document$getElementB8;
+      if (((_document$getElementB8 = document.getElementById(`actionBarItem${p}`)) === null || _document$getElementB8 === void 0 ? void 0 : _document$getElementB8.offsetParent) !== null) {
+        inv.boostPad = p - 16;
+      }
+    }
+    for (let x = 31; x < 33; x++) {
+      var _document$getElementB9;
+      if (((_document$getElementB9 = document.getElementById(`actionBarItem${x}`)) === null || _document$getElementB9 === void 0 ? void 0 : _document$getElementB9.offsetParent) !== null) {
+        inv.trap = x - 16;
+      }
+    }
+    for (let g = 29; g < 31; g++) {
+      var _document$getElementB10;
+      if (((_document$getElementB10 = document.getElementById(`actionBarItem${g}`)) === null || _document$getElementB10 === void 0 ? void 0 : _document$getElementB10.offsetParent) !== null && g !== 36) {
+        inv.teleporter = g - 16;
+      }
+    }
+    inv.spawnpad = 36;
+  };
+
+  const boostPlacer = repeater(70, () => {place(inv.trap)}, 0)
+  const spikePlacer = repeater(86, () => { place(inv.spike)}, 0);
+  const teleporterPlacer = repeater(72, () => {place(inv.teleporter)}, 0);
+  document.addEventListener("keydown", e => {
+
+    if (document.activeElement.id.toLowerCase() === 'chatbox') return;
+        spikePlacer.start(e.keyCode);
+        boostPlacer.start(e.keyCode);
+        teleporterPlacer.start(e.keyCode);
+    if (e.keyCode == 78) {
+      if (cmds.automill == true) { cmds.automill = false } else { cmds.automill = true }
+    }
+
+  });
+
+// PLACER \\
+
+  document.addEventListener("keydown", e => {
+    if (document.activeElement.id.toLowerCase() === 'chatbox') return;
+
+
+// MAIN PLACER CODE \\
+
+        spikePlacer.stop(e.keyCode);
+        boostPlacer.stop(e.keyCode);
+        teleporterPlacer.stop(e.keyCode);
+    if (e.keyCode === 81) {
+     for (let i=0;i<2;i++) { place(inv.food); }
+    };
+
+// NEW MACRO CODE \\
+
+    if (e.keyCode == 66) {
+    hat(6);
+    setTimeout(() => {
+    acc(11);
+    }, 70);
+    }
+
+    if (e.keyCode == 16) {
+    hat(12);
+    setTimeout(() => {
+    acc(11);
+    }, 70);
+    }
+
+    if (e.keyCode == 89) {
+    hat(31);
+    setTimeout(() => {
+    acc(11);
+    }, 70);
+    }
+
+    if (e.keyCode == 90) {
+    hat(40);
+    setTimeout(() => {
+    acc(21);
+    }, 70);
+    }
+
+    if (e.keyCode == 74) {
+    hat(22);
+    setTimeout(() => {
+    acc(11);
+    }, 70);
+    }
+
+// INSTAKILL CODE \\
+
+if (e.keyCode == 82) {
+weapon('weapon[0]');
+acc(0); setTimeout(() => {
+storeEquip(7, 0);
+setTimeout(() => {
+hit(true);
+setTimeout(() => {
+weapon('weapon[1]');
+storeEquip(53, 0);
+setTimeout(() => {
+hit(false);
+setTimeout(() => {
+weapon('weapon[0]');
+setTimeout(() => {
+storeEquip(36, 0);
+setTimeout(() => {
+storeEquip(6, 0);
+setTimeout(() => {
+acc(11);
+}, 600);
+}, 800);
+ }, 150);
+}, 10);
+ }, 125);
+}, 150);
+ }, 20);
+}, 125);
+ };
+});
+
+// PING DISPLAY \\
+
+let ping = document.createElement("div");
+ping = document.getElementById("pingDisplay");
+ping.style.top = "13px";
+ping.style.fontSize = "15px";
+ping.style.display = "block";
+document.body.append(ping);
+
+// AUTO GG/EZ/KILL CHAT \\
+const handleMutations = mutationsList => {
+for (const mutation of mutationsList) {
+if (mutation.target.id === "killCounter") {
+const count = parseInt(mutation.target.innerText, 10) || 0;
+if (count > prevCount) {
+chat("Destroyed: " + count + " kids"); // Thx to operop for help :D
+setTimeout(() => {
+chat("$cc Mod v5.4"); // 2nd message by Love Cookie
+}, 1200);
+ }
+}
+ }
+};
+
+// REMOVE GRID \\
+
+(function() {
+
+let oldLineTo = CanvasRenderingContext2D.prototype.lineTo;
+let oldFillRect = CanvasRenderingContext2D.prototype.fillRect;
+
+CanvasRenderingContext2D.prototype.lineTo = function() {
+    if (this.globalAlpha != .06) oldLineTo.apply(this, arguments);
+};
+
+document.getElementById("enterGame").addEventListener('click', rwrw)
+var RLC = 0
+var MLC = 0
+var KFC = 0
+
+function rwrw() {
+    console.log("Game Start")
+    S = 1;
+    M = 1;
+    H = 1
+}
+var H = 1,
+    M = 1,
+    S = 1
+setInterval(() => {
+    RLC++
+    S++
+}, 1000);
+setInterval(() => {
+    if (RLC == 60) {
+        MLC++
+        RLC = 0
+    }
+    if (MLC == 60) {
+        KFC++
+        MLC = 0
+    }
+    if (S == 60) {
+        M++
+        S = 0
+    }
+    if (M == 60) {
+        H++
+        M = 0
+    }
+}, 0);
+    const { msgpack } = window
+
+    function AntiKick() {
+        this.resetDelay = 500
+        this.packetsLimit = 40
+
+        this.ignoreTypes = [ "pp", "rmd" ]
+        this.ignoreQueuePackets = [ "5", "c", "33", "2", "7", "13c" ]
+
+        this.packetsStorage = new Map()
+        this.tmpPackets = []
+        this.packetsQueue = []
+
+        this.lastSent = Date.now()
+
+        this.onSend = function(data) {
+            const binary = new Uint8Array(data)
+            const parsed = msgpack.decode(binary)
+
+            if (Date.now() - this.lastSent > this.resetDelay) {
+                this.tmpPackets = []
+
+                this.lastSent = Date.now()
+            }
+
+            if (!this.ignoreTypes.includes(parsed[0])) {
+                if (this.packetsStorage.has(parsed[0])) {
+                    const oldPacket = this.packetsStorage.get(parsed[0])
+
+                    switch (parsed[0]) {
+                        case "2":
+                        case "33":
+                            if (oldPacket[0] == parsed[1][0]) return true
+                            break
+                    }
+                }
+
+                if (this.tmpPackets.length > this.packetsLimit) {
+                    if (!this.ignoreQueuePackets.includes(parsed[0])) {
+                        this.packetsQueue.push(data)
+                    }
+
+                    return true
+                }
+
+                this.tmpPackets.push({
+                    type: parsed[0],
+                    data: parsed[1]
+                })
+
+                this.packetsStorage.set(parsed[0], parsed[1])
+            }
+
+            return false
+        }
+    }
+
+    const antiKick = new AntiKick()
+
+    let firstSend = false
+
+    window.WebSocket.prototype.send = new Proxy(window.WebSocket.prototype.send, {
+        apply: function(target, _this) {
+            if (!firstSend) {
+                _this.addEventListener("message", (event) => {
+                    if (!antiKick.packetsQueue.length) return
+
+                    const binary = new Uint8Array(event.data)
+                    const parsed = msgpack.decode(binary)
+
+                    if (parsed[0] === "33") {
+                        _this.send(antiKick.packetsQueue[0])
+
+                        antiKick.packetsQueue.shift()
+                    }
+                })
+
+                firstSend = true
+            }
+
+            if (antiKick.onSend(arguments[2][0])) return
+
+            return Reflect.apply(...arguments)
+        }
+    })
+})();

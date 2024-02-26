@@ -1,0 +1,468 @@
+// ==UserScript==
+// @name         Soda Mod
+// @version      2
+// @author       Love Cookie
+// @description  -
+// @match        *://*.moomoo.io/*
+// @require      https://cdn.jsdelivr.net/npm/msgpack-lite@0.1.26/dist/msgpack.min.js
+// @grant        none
+// @icon         -
+// ==/UserScript==
+document.getElementById('promoImgHolder').innerHTML = `
+
+<div style="font-size: 15px"></div><div style="font-size: 19px"></div><br>
+
+`
+$("#mapDisplay").css({background: `url('https://i.imgur.com/fgFsQJp.png')`});
+document.getElementById('enterGame').innerHTML = 'Go';
+document.getElementById("gameName").outerHTML='<div id="gameName" style="padding: 40px;">\n   <span style="text-shadow: none"></span><span style="text-shadow: none;color: black;background: url(&quot;https://htmlcolorcodes.com/assets/images/colors/orange-color-solid-background-1920x1080.png&quot;);border-radius: 60px;background-size: 300px 100px;">SodaHub</span>\n</div>';
+document.getElementById('chatBox').placeholder = "";
+document.getElementById('diedText').innerHTML = '';
+$('#leaderboard').append('Soda Mod');
+// HEALTH BAR \\
+CanvasRenderingContext2D.prototype.roundRect = ((oldFunc) => function() { if (this.fillStyle == "#8ecc51") this.fillStyle = `hsl(120, 60%, 67%)`; return oldFunc.call(this, ...arguments); })(CanvasRenderingContext2D.prototype.roundRect);
+// BIG STORE \\
+document.getElementById("storeHolder").style = "height: 1500px; width: 450px;"
+document.getElementById('adCard').remove();
+document.getElementById('errorNotification').remove();
+
+// MACRO \\
+setInterval(() => window.follmoo && follmoo(), 10);
+
+function Hat(id){
+    storeEquip(id);
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.keyCode == 66 && document.activeElement.id.toLowerCase() !== 'chatbox') { // B-Solider
+        Hat(6);
+    }
+    if (e.keyCode == 16 && document.activeElement.id.toLowerCase() !== 'chatbox') { // SHIFT-Booster
+        Hat(12);
+    }
+    if (e.keyCode == 89 && document.activeElement.id.toLowerCase() !== 'chatbox') { // Y-Flipper
+        Hat(31);
+    }
+    if (e.keyCode == 90 && document.activeElement.id.toLowerCase() !== 'chatbox') { // Z-Tank
+        Hat(40);
+    }
+    if (e.keyCode == 74 && document.activeElement.id.toLowerCase() !== 'chatbox') { // J-Emp
+        Hat(22);
+    }
+});
+
+
+  let ws;
+  let x = 0;
+  let y = 0;
+  let msgpack5 = window.msgpack;
+  let scale = 45;
+  let placeOffset = 5;
+  let cmds = {
+   autoheal: false,
+   automill: false
+  }
+  let inv = {
+    primary: null,
+    secondary: null,
+    food: null,
+    wall: null,
+    spike: null,
+    mill: null,
+    mine: null,
+    boostPad: null,
+    trap: null,
+    turret: null,
+    spawnpad: null
+  };
+
+  let myPlayer = {
+    sid: null,
+    hp: null,
+    x: null,
+    y: null,
+    dir: null,
+    buildIndex: null,
+    weaponIndex: null,
+    weaponVariant: null,
+    team: null,
+    isLeader: null,
+    skinIndex: null,
+    tailIndex: null,
+    iconIndex: null
+  };
+  let enemy;
+  let nearestEnemy;
+  let enemyInf = { hat: null, x: null, y: null, weaponIndex: null}
+
+  document.msgpack = window.msgpack;
+  WebSocket.prototype.oldSend = WebSocket.prototype.send;
+  WebSocket.prototype.send = function (e) {
+    ws || (document.ws = this, ws = this, document.ws.addEventListener("message", hookWS));
+    this.oldSend(e);
+  };
+  function dist(a, b){
+    return Math.sqrt( Math.pow((b.y-a[2]), 2) + Math.pow((b.x-a[1]), 2) );
+  }
+  let join = message => Array.isArray(message) ? [...message] : [...message];
+  let hookWS = ms => {
+    let tmpData = msgpack5.decode(new Uint8Array(ms.data));
+    let data;
+    if(tmpData.length > 1) { data = [tmpData[0], ...tmpData[1]]; if (data[1] instanceof Array){ data = data } } else { data = tmpData }
+    let item = data[0];
+    if(!data) {return};
+
+    if (item == "C" && myPlayer.sid == null){
+        myPlayer.sid = data[1];
+    }
+    if(item == "O" && data[1] == myPlayer.sid) {
+        let hp = data[2]
+       if (hp < 80) {
+        let c;
+        if (hp < 80) c = 1;
+        if (hp < 60) c = 2;
+        for (let i=0;i<c;i++) { place(inv.food) }
+       }
+    }
+    if (item == "a") {
+        enemy = [];
+        for(let i = 0; i < data[1].length / 13; i++) {
+            let inf = data[1].slice(13*i, 13*i+13);
+            if(inf[0] == myPlayer.sid) {
+                myPlayer.x = inf[1];
+                myPlayer.y = inf[2];
+                myPlayer.dir = inf[3];
+                myPlayer.buildIndex = inf[4];
+                myPlayer.weaponIndex = inf[5];
+                myPlayer.weaponVariant = inf[6];
+                myPlayer.team = inf[7];
+                myPlayer.isLeader = inf[8];
+                myPlayer.skinIndex = inf[9];
+                myPlayer.tailIndex = inf[10];
+                myPlayer.iconIndex = inf[11];
+
+            } else if(inf[7] != myPlayer.team || inf[7] === null) {
+                enemy.push(inf);
+            }
+        }
+    }
+   if (enemy) {
+        nearestEnemy = enemy.sort((a, b) => dist(a, myPlayer) - dist(b, myPlayer))[0];
+    }
+   if (nearestEnemy) {
+      enemyInf.weaponIndex = nearestEnemy[5]
+      enemyInf.hat = nearestEnemy[9]
+      enemyInf.x = nearestEnemy[1]
+      enemyInf.y = nearestEnemy[2]
+   }
+   if (y !== myPlayer.y || x !== myPlayer.x) {
+           if (cmds.automill) {
+            let angle = Math.atan2(y - myPlayer.y, x - myPlayer.x);
+            place(inv.mill, angle + Math.PI / 2.5);
+            place(inv.mill, angle);
+            place(inv.mill, angle - Math.PI / 2.5);
+          }
+          x = myPlayer.x;
+          y = myPlayer.y;
+        }
+      refresh();
+    }
+  var repeater = function(key, action, interval) {
+    let _isKeyDown = false;
+    let _intervalId = undefined;
+    return {
+        start(keycode) {
+            if(keycode == key && document.activeElement.id.toLowerCase() !== 'chatbox') {
+                _isKeyDown = true;
+                if(_intervalId === undefined) {
+                    _intervalId = setInterval(() => {
+                        action();
+                        if(!_isKeyDown){
+                            clearInterval(_intervalId);
+                            _intervalId = undefined;
+  } }, interval) } } }, stop(keycode) { if(keycode == key && document.activeElement.id.toLowerCase() !== 'chatbox') { _isKeyDown = false; } } } }
+
+
+  const emit = (e, a, b, c, m, r) => ws.send(Uint8Array.from([...msgpack5.encode([e, [a, b, c, m, r]])]));
+  const place = (e, l) => {
+    emit("G", e, false);
+    emit("d", 1, l);
+    emit("d", 0, l);
+    emit("G", myPlayer.weaponIndex, true);
+  };
+  function chat(msg) { emit("6", msg); }
+  function hat(id) { emit("c", myPlayer.skinIndex, id, 0) }
+  function acc(id) { emit("c", myPlayer.tailIndex, id, 1) }
+  function weapon(e) {
+   if (e === 'primary') { emit("G", inv.primary, true); }
+   if (e === 'secondary') { emit("G", inv.secondary, true) }
+  }
+  function hit(e) {
+   if (e == true || e == false) emit("K", true)
+  }
+
+  const refresh = () => {
+    for (let c = 0; c < 9; c++) {
+      var _document$getElementB;
+      if (((_document$getElementB = document.getElementById(`actionBarItem${c}`)) === null || _document$getElementB === void 0 ? void 0 : _document$getElementB.offsetParent) !== null) {
+        inv.primary = c;
+      }
+    }
+    for (let s = 9; s < 16; s++) {
+      var _document$getElementB2;
+      if (((_document$getElementB2 = document.getElementById(`actionBarItem${s}`)) === null || _document$getElementB2 === void 0 ? void 0 : _document$getElementB2.offsetParent) !== null) {
+        inv.secondary = s;
+      }
+    }
+    for (let P = 16; P < 19; P++) {
+      var _document$getElementB3;
+      if (((_document$getElementB3 = document.getElementById(`actionBarItem${P}`)) === null || _document$getElementB3 === void 0 ? void 0 : _document$getElementB3.offsetParent) !== null) {
+        inv.food = P - 16;
+      }
+    }
+    for (let f = 19; f < 22; f++) {
+      var _document$getElementB4;
+      if (((_document$getElementB4 = document.getElementById(`actionBarItem${f}`)) === null || _document$getElementB4 === void 0 ? void 0 : _document$getElementB4.offsetParent) !== null) {
+        inv.wall = f - 16;
+      }
+    }
+    for (let _ = 22; _ < 26; _++) {
+      var _document$getElementB5;
+      if (((_document$getElementB5 = document.getElementById(`actionBarItem${_}`)) === null || _document$getElementB5 === void 0 ? void 0 : _document$getElementB5.offsetParent) !== null) {
+        inv.spike = _ - 16;
+      }
+    }
+    for (let u = 26; u < 29; u++) {
+      var _document$getElementB6;
+      if (((_document$getElementB6 = document.getElementById(`actionBarItem${u}`)) === null || _document$getElementB6 === void 0 ? void 0 : _document$getElementB6.offsetParent) !== null) {
+        inv.mill = u - 16;
+      }
+    }
+    for (let I = 29; I < 31; I++) {
+      var _document$getElementB7;
+      if (((_document$getElementB7 = document.getElementById(`actionBarItem${I}`)) === null || _document$getElementB7 === void 0 ? void 0 : _document$getElementB7.offsetParent) !== null) {
+        inv.mine = I - 16;
+      }
+    }
+    for (let p = 31; p < 33; p++) {
+      var _document$getElementB8;
+      if (((_document$getElementB8 = document.getElementById(`actionBarItem${p}`)) === null || _document$getElementB8 === void 0 ? void 0 : _document$getElementB8.offsetParent) !== null) {
+        inv.boostPad = p - 16;
+      }
+    }
+    for (let x = 31; x < 33; x++) {
+      var _document$getElementB9;
+      if (((_document$getElementB9 = document.getElementById(`actionBarItem${x}`)) === null || _document$getElementB9 === void 0 ? void 0 : _document$getElementB9.offsetParent) !== null) {
+        inv.trap = x - 16;
+      }
+    }
+    for (let g = 29; g < 31; g++) {
+      var _document$getElementB10;
+      if (((_document$getElementB10 = document.getElementById(`actionBarItem${g}`)) === null || _document$getElementB10 === void 0 ? void 0 : _document$getElementB10.offsetParent) !== null && g !== 36) {
+        inv.turret = g - 16;
+      }
+    }
+    inv.spawnpad = 36;
+  };
+
+  const boostPlacer = repeater(70, () => {place(inv.trap)}, 0)
+  const spikePlacer = repeater(86, () => { place(inv.spike)}, 0);
+  const turretPlacer = repeater(72, () => {place(inv.turret)}, 0);
+  document.addEventListener("keydown", e => {
+
+    if (document.activeElement.id.toLowerCase() === 'chatbox') return;
+        spikePlacer.start(e.keyCode);
+        boostPlacer.start(e.keyCode);
+        turretPlacer.start(e.keyCode);
+    if (e.keyCode == 78) {
+      if (cmds.automill == true) { cmds.automill = false } else { cmds.automill = true }
+    }
+
+  });
+
+  document.addEventListener("keydown", e => {
+    if (document.activeElement.id.toLowerCase() === 'chatbox') return;
+
+        spikePlacer.stop(e.keyCode);
+        boostPlacer.stop(e.keyCode);
+        turretPlacer.stop(e.keyCode);
+    if (e.keyCode === 81) {
+     for (let i=0;i<2;i++) { place(inv.food); }
+    };
+
+// INSTAKILL CODE \\
+
+if (e.keyCode == 82) {
+weapon('primary');
+setTimeout(() => {
+storeEquip(7, 0);
+setTimeout(() => {
+hit(true);
+setTimeout(() => {
+weapon('secondary');
+storeEquip(53, 0);
+setTimeout(() => {
+hit(false);
+weapon('primary');
+storeEquip(6, 0);
+}, 150); // 150
+}, 125); // 140
+}, 50); // 100
+}, 30); // 50
+};
+});
+
+
+// PING DISPLAY \\
+
+let ping = document.createElement("div");
+ping = document.getElementById("pingDisplay");
+ping.style.top = "13px";
+ping.style.fontSize = "15px";
+ping.style.display = "block";
+document.body.append(ping);
+
+const handleMutations = mutationsList => {
+  for (const mutation of mutationsList) {
+    if (mutation.target.id === "killCounter") {
+      const count = parseInt(mutation.target.innerText, 10) || 0;
+      if (count > prevCount) {
+        chat("gg - autoGG");
+      }
+    }
+  }
+};
+
+// REMOVE GRID \\
+
+(function() {
+
+let oldLineTo = CanvasRenderingContext2D.prototype.lineTo;
+let oldFillRect = CanvasRenderingContext2D.prototype.fillRect;
+
+CanvasRenderingContext2D.prototype.lineTo = function() {
+    if (this.globalAlpha != .06) oldLineTo.apply(this, arguments);
+};
+
+document.getElementById("enterGame").addEventListener('click', rwrw)
+var RLC = 0
+var MLC = 0
+var KFC = 0
+
+function rwrw() {
+    console.log("Game Start")
+    S = 1;
+    M = 1;
+    H = 1
+}
+var H = 1,
+    M = 1,
+    S = 1
+setInterval(() => {
+    RLC++
+    S++
+}, 1000);
+setInterval(() => {
+    if (RLC == 60) {
+        MLC++
+        RLC = 0
+    }
+    if (MLC == 60) {
+        KFC++
+        MLC = 0
+    }
+    if (S == 60) {
+        M++
+        S = 0
+    }
+    if (M == 60) {
+        H++
+        M = 0
+    }
+}, 0);
+    const { msgpack } = window
+
+    function AntiKick() {
+        this.resetDelay = 500
+        this.packetsLimit = 40
+
+        this.ignoreTypes = [ "pp", "rmd" ]
+        this.ignoreQueuePackets = [ "5", "c", "33", "2", "7", "13c" ]
+
+        this.packetsStorage = new Map()
+        this.tmpPackets = []
+        this.packetsQueue = []
+
+        this.lastSent = Date.now()
+
+        this.onSend = function(data) {
+            const binary = new Uint8Array(data)
+            const parsed = msgpack.decode(binary)
+
+            if (Date.now() - this.lastSent > this.resetDelay) {
+                this.tmpPackets = []
+
+                this.lastSent = Date.now()
+            }
+
+            if (!this.ignoreTypes.includes(parsed[0])) {
+                if (this.packetsStorage.has(parsed[0])) {
+                    const oldPacket = this.packetsStorage.get(parsed[0])
+
+                    switch (parsed[0]) {
+                        case "2":
+                        case "33":
+                            if (oldPacket[0] == parsed[1][0]) return true
+                            break
+                    }
+                }
+
+                if (this.tmpPackets.length > this.packetsLimit) {
+                    if (!this.ignoreQueuePackets.includes(parsed[0])) {
+                        this.packetsQueue.push(data)
+                    }
+
+                    return true
+                }
+
+                this.tmpPackets.push({
+                    type: parsed[0],
+                    data: parsed[1]
+                })
+
+                this.packetsStorage.set(parsed[0], parsed[1])
+            }
+
+            return false
+        }
+    }
+
+    const antiKick = new AntiKick()
+
+    let firstSend = false
+
+    window.WebSocket.prototype.send = new Proxy(window.WebSocket.prototype.send, {
+        apply: function(target, _this) {
+            if (!firstSend) {
+                _this.addEventListener("message", (event) => {
+                    if (!antiKick.packetsQueue.length) return
+
+                    const binary = new Uint8Array(event.data)
+                    const parsed = msgpack.decode(binary)
+
+                    if (parsed[0] === "33") {
+                        _this.send(antiKick.packetsQueue[0])
+
+                        antiKick.packetsQueue.shift()
+                    }
+                })
+
+                firstSend = true
+            }
+
+            if (antiKick.onSend(arguments[2][0])) return
+
+            return Reflect.apply(...arguments)
+        }
+    })
+})();
