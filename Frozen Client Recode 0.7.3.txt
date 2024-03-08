@@ -1,0 +1,741 @@
+// ==UserScript==
+// @name         Frozen Client ReCode 0.7
+// @version      RELEASE-0.7.3
+// @description  hi
+// @author       Dayte
+// @match        *://moomoo.io/*
+// @match        *://*.moomoo.io/*
+// @require      https://frozen-client-recode.glitch.me/helper/helper.js
+// @require      https://greasyfork.org/scripts/368273-msgpack/code/msgpack.js?version=598723
+// @require      https://cdn.jsdelivr.net/npm/msgpack-lite@0.1.26/dist/msgpack.min.js
+// @require      https://code.jquery.com/jquery-3.6.4.min.js
+// @require      https://code.jquery.com/ui/1.12.1/jquery-ui.js
+// @grant        GM_xmlhttpRequest
+// @icon         https://cdn.discordapp.com/attachments/1157563148551852102/1209213433153593474/20240219_220220.jpg?ex=65ef5544&is=65dce044&hm=0bc7c9b08f7fd43a918cdb92b642fe5d4001b6ad841da6c9a7a6c64be4634629&
+// ==/UserScript==
+
+const $ = window.$;
+Array.from(document.getElementsByClassName("adsbygoogle")).forEach(e => {
+    e.parentElement.outerHTML.includes("body") ? e.remove() : e.parentElement.remove()
+}), $("#touch-controls-right, #touch-controls-left, #adCard, #partyButton, #joinPartyButton, #linksContainer2").remove(), FrozenHelper.setLocalStorageItems(1);
+let rankCardHolder = document.createElement("div");
+rankCardHolder.id = "rankCardHolder", rankCardHolder.innerHTML = '\n<div class="rankTitle">Profile Info</div>\n<div id="userMainHolder">\n    <div id="userHolder">\n        <div class="userTitle">Kills</div>\n        <div id="userKills">-</div>\n    </div>\n    <div id="userHolder">\n        <div class="userTitle">Deaths</div>\n        <div id="userDeaths">-</div>\n    </div>\n    <div id="userHolder">\n        <div class="userTitle">KDR</div>\n        <div id="userKDR">-</div>\n    </div>\n    <div id="userHolder">\n        <div class="userTitle">Play Time</div>\n        <div id="userPlayTime">-</div>\n    </div>\n    <div id="userHolder" style="height: 55px; left: 70px; position: relative;">\n        <div class="userTitle">Rank</div>\n        <div id="rankHolder"><i class="fa-regular fa-snowflake"></i></div>\n    </div>\n</div>\n<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />\n';
+let mouseTrackerHolder = document.createElement("div");
+mouseTrackerHolder.id = "mouseTrackerHolder", mouseTrackerHolder.innerHTML = '<div id="mouseTracker"></div>';
+let notificationHolder = document.createElement("div");
+notificationHolder.id = "notificationHolder";
+let fpsDisplay = document.createElement("div");
+fpsDisplay.id = "fpsDisplay", fpsDisplay.innerHTML = 'FPS <span id="fpsText" style="color: white;">-</span>';
+let cpsDisplay = document.createElement("div");
+cpsDisplay.id = "cpsDisplay", cpsDisplay.innerHTML = 'CPS <span id="cpsText" style="color: white;">-</span>';
+let debuggerHolder = document.createElement("div");
+debuggerHolder.id = "debugger", debuggerHolder.innerHTML = '\n<div class="debuggerTitle">Debugger</div>\n<div class="debuggerOutput" id="debuggerOutput"></div>\n';
+let arraylist = document.createElement("div");
+arraylist.id = "arrayListHolder", arraylist.innerHTML = '\n<div class="arrayList" id="arrayList">\n    <div class="arrayListElement" id="arrayListElement1">Mouse Macro [<font class="arrayListElementSuffix" id="mouseMacroSuffix"></font>]</div><br id="br1" class="lineBreaker">\n    <div class="arrayListElement" id="arrayListElement2">Auto Scroll [<font class="arrayListElementSuffix" id="autoScrollSuffix"></font>]</div><br id="br2" class="lineBreaker">\n    <div class="arrayListElement" id="arrayListElement3">Auto Clicker [<font class="arrayListElementSuffix" id="autoClickerSuffix"></font>]</div><br id="br3" class="lineBreaker">\n    <div class="arrayListElement" id="arrayListElement4">Auto Heal [<font class="arrayListElementSuffix" id="autoHealSuffix"></font>]</div><br id="br4" class="lineBreaker">\n    <div class="arrayListElement" id="arrayListElement5">Insta Kill [<font class="arrayListElementSuffix" id="instaKillSuffix">Normal</font>]</div><br id="br5" class="lineBreaker">\n    <div class="arrayListElement" id="arrayListElement6">Place Macro</div><br id="br6" class="lineBreaker">\n    <div class="arrayListElement" id="arrayListElement7">Hats Macro</div><br id="br7" class="lineBreaker">\n    <div class="arrayListElement" id="arrayListElement8">Kill Chat</div><br id="br8" class="lineBreaker">\n    <div class="arrayListElement" id="arrayListElement9">Rebinds</div><br id="br9" class="lineBreaker">\n</div>\n';
+let keystrokes = document.createElement("div");
+keystrokes.id = "keystrokes", keystrokes.innerHTML = '\n<div id="keyw" class="keys">\n    <font id="keytext">W</font>\n</div>\n<div id="keya" class="keys">\n    <font id="keytext">A</font>\n</div>\n<div id="keys" class="keys">\n    <font id="keytext">S</font>\n</div>\n<div id="keyd" class="keys">\n    <font id="keytext">D</font>\n</div>\n<div id="keyspace" class="keys">\n    <font id="keytext">Space</font>\n</div>\n';
+let resourcesHolder = document.createElement("div");
+resourcesHolder.id = "resourcesHolder", resourcesHolder.innerHTML = '\n<div class="resourcesTitle">Resources info</div>\n<div class="resources">\n    <div class="iconHolder">\n        <img class="resourcesIcon" src="https://sandbox.moomoo.io/img/resources/food_ico.png">\n        <div id="foodText" class="resourcesText">100</div>\n    </div>\n    <div class="iconHolder">\n        <img class="resourcesIcon" src="https://sandbox.moomoo.io/img/resources/wood_ico.png">\n        <div id="woodText" class="resourcesText">100</div>\n    </div>\n    <div class="iconHolder">\n        <img class="resourcesIcon" src="https://sandbox.moomoo.io/img/resources/stone_ico.png">\n        <div id="stoneText" class="resourcesText">100</div>\n    </div>\n    <div class="iconHolder">\n        <img class="resourcesIcon" src="https://sandbox.moomoo.io/img/resources/gold_ico.png">\n        <div id="goldText" class="resourcesText">100</div>\n    </div>\n</div>\n';
+let healthInfo = document.createElement("div");
+healthInfo.id = "healthInfo", healthInfo.innerHTML = '\n<svg class="circleHealth" width="90" height="90">\n    <circle class="circleHealth-bg" r="32" cx="45" cy="45"></circle>\n    <circle class="circleHealth-bar" r="32" cx="45" cy="45" stroke-dasharray="201.06" stroke-dashoffset="0"></circle>\n</svg>\n<div class="dataName">Health</div>\n';
+let shameInfo = document.createElement("div");
+shameInfo.id = "shameInfo", shameInfo.innerHTML = '\n<svg class="circleShame" width="90" height="90">\n    <circle class="circleShame-bg" r="32" cx="45" cy="45"></circle>\n    <circle class="circleShame-bar" r="32" cx="45" cy="45" stroke-dasharray="201.06" stroke-dashoffset="0"></circle>\n</svg>\n<div class="dataName">Shame</div>\n';
+let dark = document.createElement("div");
+dark.id = "dark";
+let concept = document.createElement("div");
+concept.id = "menu", concept.innerHTML = '\n<div class="sections">\n    <div class="logo">Frozen<font class="logo external">0.7.3</font></div>\n    <div class="sectionsHolder">\n        <div class="sectionTab" id="sectionTab1" style="width: 75px;"><i class="fa-solid fa-crosshairs"></i>Combat</div>\n        <div class="sectionTab" id="sectionTab2" style="width: 65px;"><i class="fa-solid fa-user"></i>Player</div>\n        <div class="sectionTab" id="sectionTab3" style="width: 70px;"><i class="fa-regular fa-eye"></i>Render</div>\n        <div class="sectionTab" id="sectionTab4" style="width: 70px;"><i class="fa-regular fa-folder-closed"></i>Config</div>\n        <div class="sectionTab" id="sectionTab5" style="width: 70px;"><i class="fa-solid fa-magnifying-glass"></i>Themes</div>\n    </div>\n</div>\n<div class="functional">\n    <div class="menuTab" id="combat">\n        <div class="toggleTab">Place Macro<button class="toggleButton" id="combat1">Enable</button></div>\n        <div class="toggleTab">Hats Macro<button class="toggleButton" id="combat2">Enable</button></div>\n        <div class="toggleTab">Mouse Macro<button class="toggleButton" id="combat3">Enable</button></div>\n        <div class="toggleTab">Insta Kill<button class="toggleButton" id="combat4">Enable</button></div>\n        <div class="toggleTab">Auto Clicker<button class="toggleButton" id="combat5">Enable</button></div>\n    </div>\n    <div class="menuTab" id="player">\n        <div class="toggleTab">Auto Scroll<button class="toggleButton" id="player1">Enable</button></div>\n        <div class="toggleTab">Auto Heal<button class="toggleButton" id="player2">Enable</button></div>\n        <div class="toggleTab">Rebinds<button class="toggleButton" id="player3">Enable</button></div>\n        <div class="toggleTab">Kill Chat<button class="toggleButton" id="player4">Enable</button></div>\n    </div>\n    <div class="menuTab" id="render">\n        <div class="toggleTab">GameUI<button class="toggleButton" id="render1">Disable</button></div>\n        <div class="toggleTab">Store Button<button class="toggleButton" id="render2">Disable</button></div>\n        <div class="toggleTab">Chat Button<button class="toggleButton" id="render3">Disable</button></div>\n        <div class="toggleTab">Clan Button<button class="toggleButton" id="render4">Disable</button></div>\n        <div class="toggleTab">Leaderboard<button class="toggleButton" id="render5">Disable</button></div>\n        <div class="toggleTab">Kill Score<button class="toggleButton" id="render6">Disable</button></div>\n        <div class="toggleTab">Gold Score<button class="toggleButton" id="render7">Disable</button></div>\n        <div class="toggleTab">Food Score<button class="toggleButton" id="render8">Disable</button></div>\n        <div class="toggleTab">Wood Score<button class="toggleButton" id="render9">Disable</button></div>\n        <div class="toggleTab">Stone Score<button class="toggleButton" id="render10">Disable</button></div>\n        <div class="toggleTab">Mini-Map<button class="toggleButton" id="render11">Disable</button></div>\n        <div class="toggleTab">Level Text<button class="toggleButton" id="render12">Disable</button></div>\n        <div class="toggleTab">Level Progress<button class="toggleButton" id="render13">Disable</button></div>\n        <div class="toggleTab">Inventory Slots<button class="toggleButton" id="render14">Disable</button></div>\n        <div class="toggleTab">Notifications<button class="toggleButton" id="render15">Disable</button></div>\n        <div class="toggleTab">Health Info<button class="toggleButton" id="render16">Enable</button></div>\n        <div class="toggleTab">Shame Info<button class="toggleButton" id="render17">Enable</button></div>\n        <div class="toggleTab">Resources Info<button class="toggleButton" id="render18">Enable</button></div>\n        <div class="toggleTab">Keystrokes<button class="toggleButton" id="render19">Enable</button></div>\n        <div class="toggleTab">Dark Mode<button class="toggleButton" id="render20">Enable</button></div>\n        <div class="toggleTab">FPS Display<button class="toggleButton" id="render21">Enable</button></div>\n        <div class="toggleTab">CPS Display<button class="toggleButton" id="render22">Enable</button></div>\n        <div class="toggleTab">Mouse Tracker<button class="toggleButton" id="render23">Enable</button></div>\n        <div class="toggleTab">Debugger<button class="toggleButton" id="render24">Enable</button></div>\n        <div class="toggleTab">Modules list<button class="toggleButton" id="render25">Enable</button></div>\n    </div>\n    <div class="menuTab" id="config">\n        <div class="terminalTab">\n            <div class="terminalOutput" id="terminalOutput"></div>\n            <input type="input" maxlength="90" class="terminalInput" id="terminalInput" autocomplete="off" placeholder="Press \'Enter\' or click here to use input" spellcheck="false"></input>\n            <span id="predict"></span>\n        </div>\n    </div>\n    <div class="menuTab" id="themes">\n        <div class="theme selected" id="theme1">Electric Blue</div>\n        <div class="theme" id="theme2">Hot Pink</div>\n        <div class="theme" id="theme3">Fresh Green</div>\n        <div class="theme" id="theme4">Royal Blue</div>\n        <div class="theme" id="theme5">Fiery Red</div>\n        <div class="theme" id="theme6">Spring Green</div>\n        <div class="theme" id="theme7">Sky Blue</div>\n        <div class="theme" id="theme8">Moderate purple</div>\n        <div class="theme" id="theme9">Bright Yellow</div>\n        <div class="theme" id="theme10">Midnight Blue</div>\n        <div class="theme" id="theme11">Violet Purple</div>\n        <div class="theme" id="theme12">Halloween</div>\n        <div class="theme" id="theme13">Gray Cloud</div>\n        <div class="theme" id="theme14">Lavender Pink</div>\n        <div class="theme" id="theme15">Coral Pink</div>\n    </div>\n</div>\n<link href=\'https://fonts.googleapis.com/css?family=ADLaM Display\' rel=\'stylesheet\'>\n<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />\n';
+let ConceptCSS = document.createElement("style");
+ConceptCSS.appendChild(document.createTextNode("\n:root {\n    --primary-color: #7289DA;\n    --scale-key-w: 0;\n    --scale-key-a: 0;\n    --scale-key-s: 0;\n    --scale-key-d: 0;\n    --scale-key-space: 0;\n}\n#menu {\n    position: absolute;\n    display: block;\n    top: 0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    margin: auto;\n    width: 600px;\n    height: 450px;\n    box-shadow: 0 0 20px #00000080;\n    border-radius: 12px;\n    transition: transform 0.4s;\n}\n#notificationHolder {\n    position: absolute;\n    width: 160px;\n    height: 100px;\n    top: 1%;\n    left: 1%;\n    display: flex;\n    align-items: center;\n    flex-direction: column;\n}\n#notificationTab {\n    position: relative;\n    display: block;\n    width: 160px;\n    height: 45px;\n    background: #00000080;\n    box-shadow: 0px 7px 20px #00000080;\n    top: 1%;\n    left: 1%;\n    text-align: center;\n    line-height: 50px;\n    color: white;\n    margin-top: 10px;\n    transition: all 0.2s;\n}\n#notificationTab::after {\n    content: \"\";\n    position: absolute;\n    left: 0;\n    top: 0;\n    width: 100%;\n    height: 5px;\n    background: var(--primary-color);\n    animation: timer 3.3s linear;\n    animation-delay: 0.5s;\n}\n@keyframes timer {\n    100% {\n        width: 0;\n   }\n}\n.icon {\n    position: absolute;\n    display: block;\n    width: 18px;\n    height: 18px;\n    top: 15px;\n    left: 10px;\n    background: linear-gradient(45deg, var(--primary-color) 0%, #ffffff 200%);\n    border-radius: 2px;\n}\n.fa-info {\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n}\n.fa-crosshairs, .fa-user, .fa-eye, .fa-folder-closed, .fa-gear, .fa-magnifying-glass, .fa-language {\n    position: relative;\n    top: 9px;\n    left: -3px;\n    transform: translate(0, -50%);\n    font-size: 15px;\n}\n.sections {\n    position: absolute;\n    display: block;\n    width: 120px;\n    height: 450px;\n    left: 0;\n    top: 0;\n    background: #191c21;\n    border-radius: 12px 0 0 12px;\n}\n.sectionsHolder {\n    position: absolute;\n    top: 50px;\n    left: 10px;\n    height: auto;\n    width: 100px;\n    background: #ffffff00;\n}\n.logo {\n    position: absolute;\n    color: white;\n    font-size: 20px;\n    text-align: start;\n    top: 10px;\n    left: 20px;\n    font-family: 'ADLaM Display';\n    transition: 0.2s;\n}\n.sectionTab {\n    display: block;\n    width: 75px;\n    height: 25px;\n    color: white;\n    transition: .5s;\n    margin: 10px 5px 0;\n    background: transparent;\n    text-align: center;\n    border-radius: 6px;\n    line-height: 25px;\n}\n.functional {\n    position: absolute;\n    display: block;\n    width: 80%;\n    height: 100%;\n    left: 20%;\n    top: 0;\n    background: #1d2028;\n    border-radius: 0 12px 12px 0;\n}\n.focused {\n    box-shadow: 0 0 5px 5px var(--primary-color);\n    background: var(--primary-color);\n    transform: translateX(5px);\n}\n.selected {\n    border-bottom: white solid 3px;\n}\n.menuTab {\n    display: none;\n    flex-wrap: wrap;\n    grid-template-columns: repeat(4, 1fr);\n    grid-row-gap: 10px;\n    grid-auto-rows: min-content;\n    align-items: center;\n    width: 100%;\n    height: 100%;\n    font-weight: bold;\n    font-size: 15px;\n    font-family: 'ADLaM Display';\n    text-align: center;\n    color: white;\n    overflow-Y: scroll;\n}\n.theme {\n    position: relative;\n    display: block;\n    width: 120px;\n    height: 25px;\n    top: 25%;\n    left: 10%;\n    border-radius: 9px;\n    clip-path: inset(0 round 9px);\n    background-origin: border-box;\n    background-clip: content-box, border-box;\n    text-align: center;\n    line-height: 25px;\n    color: white;\n    background: #111113;\n    transition: 0.2s;\n}\n.theme:hover {\n    transform: scale(1.1);\n}\n#themes {\n    display: none;\n    flex-wrap: wrap;\n    grid-template-columns: repeat(3, 1fr);\n    grid-row-gap: 20px;\n    grid-auto-rows: min-content;\n    align-items: center;\n}\n.terminalTab {\n    position: relative;\n    display: block;\n    width: 90%;\n    height: 90%;\n    top: 5%;\n    left: 5%;\n    border-radius: 9px;\n    text-align: start;\n    color: white;\n    background: #111113;\n    transition: 0.2s;\n}\n.terminalOutput {\n    position: relative;\n    display: block;\n    width: 85%;\n    height: 83%;\n    top: 2%;\n    left: 3%;\n    text-align: start;\n    color: var(--primary-color);\n    transition: 0.2s;\n    overflow-Y: auto;\n}\n.terminalInput {\n    position: absolute;\n    display: block;\n    width: 90%;\n    height: 35px;\n    bottom: 5%;\n    left: 3%;\n    color: white;\n    background: #191c21;\n    border: none;\n    outline: none;\n    text-align: start;\n    z-index: 5;\n    padding-left: 2%;\n}\n#predict {\n    position: absolute;\n    display: block;\n    width: 92%;\n    height: 35px;\n    left: 5%;\n    top: 88.5%;\n    color: white;\n    border: none;\n    outline: none;\n    text-align: start;\n    opacity: 0.6;\n    z-index: 6;\n    pointer-events: none;\n}\n.toggleTab {\n    position: relative;\n    display: block;\n    width: 100px;\n    height: 65px;\n    top: 25%;\n    left: 10%;\n    border-radius: 9px;\n    text-align: center;\n    line-height: 35px;\n    color: white;\n    background: #111113;\n    transition: 0.2s;\n}\n.toggleButton {\n    position: relative;\n    width: 80px;\n    height: 20px;\n    bottom: 10px;\n    box-shadow: 0 0 5px 2px var(--primary-color);\n    background: var(--primary-color);\n    color: white;\n    font-family: 'ADLaM Display';\n    border-radius: 5px;\n    border: none;\n    outline: none;\n}\n.external {\n    position: absolute;\n    color: var(--primary-color);\n    margin-top: -13px;\n    margin-left: 40px;\n    font-size: 10px;\n    text-shadow: 0 0 8px var(--primary-color);\n}\n#healthInfo {\n    position: absolute;\n    display: none;\n    width: 90px;\n    height: 90px;\n    top: 29%;\n    left: 15%;\n    background: #00000080;\n    border-radius: 10px;\n    box-shadow: 0px 0px 20px #00000050;\n    line-height: 35px;\n    color: white;\n    text-align: center;\n    z-index: 1000000;\n    scale: 1;\n}\n.dataName {\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    font-size: 9px;\n    font-family: 'ADLaM Display';\n}\n.circleHealth {\n    fill: none;\n    stroke-width: 10;\n    stroke-linecap: round;\n    transform: rotate(-90deg);\n    transform-origin: 50% 50%;\n}\n.circleHealth-bg {\n    stroke: #00000050;\n    transition: stroke-dashoffset 0.5s;\n}\n.circleHealth-bar {\n    stroke: var(--primary-color);\n    transition: all 0.5s;\n}\n#shameInfo {\n    position: absolute;\n    display: none;\n    width: 90px;\n    height: 90px;\n    top: 41.5%;\n    left: 15%;\n    background: #00000080;\n    border-radius: 10px;\n    box-shadow: 0px 0px 20px #00000050;\n    line-height: 35px;\n    color: white;\n    text-align: center;\n    z-index: 1000000;\n    scale: 1;\n}\n.dataName {\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    font-size: 9px;\n    font-family: 'ADLaM Display';\n}\n.circleShame {\n    fill: none;\n    stroke-width: 10;\n    stroke-linecap: round;\n    transform: rotate(-90deg);\n    transform-origin: 50% 50%;\n}\n.circleShame-bg {\n    stroke: #00000050;\n    transition: stroke-dashoffset 0.5s;\n}\n.circleShame-bar {\n    stroke: var(--primary-color);\n    transition: all 0.5s;\n}\n#debugger {\n    position: absolute;\n    display: none;\n    width: 210px;\n    height: 175px;\n    top: 5%;\n    left: 15%;\n    background: #00000080;\n    border-radius: 10px;\n    box-shadow: 0px 0px 20px #00000050;\n    color: white;\n    z-index: 1000000;\n}\n.debuggerTitle {\n    height: 50px;\n    background: #00000020;\n    border-radius: 10px 10px 0 0;\n    color: var(--primary-color);\n    text-align: center;\n    line-height: 50px;\n    transition: 0.4s;\n    font-family: 'ADLaM Display';\n    font-size: 20px;\n}\n.debuggerOutput {\n    width: 94%;\n    height: 120px;\n    margin-top: 4px;\n    margin-left: 6%;\n    font-size: 9px;\n    font-family: 'ADLaM Display';\n    overflow-Y: auto;\n}\n#resourcesHolder {\n    position: absolute;\n    display: none;\n    width: 161px;\n    height: 88px;\n    top: 5%;\n    left: 30%;\n    background: #00000080;\n    border-radius: 10px;\n    box-shadow: 0px 0px 20px #00000050;\n    color: white;\n    z-index: 1000000;\n}\n.resourcesTitle {\n    height: 40px;\n    background: #00000020;\n    border-radius: 10px 10px 0 0;\n    color: var(--primary-color);\n    text-align: center;\n    line-height: 40px;\n    transition: 0.4s;\n    font-family: 'ADLaM Display';\n    font-size: 16px\n}\n.resources {\n    width: 97%;\n    height: 40px;\n    margin-left: 3%;\n    margin-top: 4px;\n    font-size: 5px;\n    overflow-Y: auto;\n}\n.iconHolder {\n    position: relative;\n    display: inline-block;\n}\n.resourcesIcon {\n    width: 35px;\n    height: 35px;\n}\n.resourcesText {\n    position: absolute;\n    top: 45%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    text-align: center;\n    vertical-align: middle;\n    font-size: 10px;\n    font-family: 'ADLaM Display';\n}\n#dark {\n    position: absolute;\n    display: none;\n    background: rgba(0, 0, 0, 0.1);\n    top: 0;\n    left: 0;\n    width: 100%;\n    height: 100%;\n    z-index: 10000;\n    pointer-events: none;\n}\n#keystrokes {\n    position: absolute;\n    display: none;\n    height: 100px;\n    width: 100px;\n    top: 18%;\n    left: 33%;\n    z-index: 1000000;\n}\n#keyw {\n    position: absolute;\n    left: 0px;\n    top: 0px;\n    width: 40px;\n    height: 40px;\n    border-radius: 15%;\n}\n#keyw:before {\n    content: \"W\";\n    position: absolute;\n    left: 0px;\n    top: 0px;\n    width: 40px;\n    height: 40px;\n    border-radius: 15%;\n    background-color: rgba(255,255,255,0.5);\n    scale: var(--scale-key-w);\n    transition: scale 0.2s;\n    color: var(--primary-color);\n}\n#keya {\n    position: absolute;\n    left: -50px;\n    top: 50px;\n    width: 40px;\n    height: 40px;\n    border-radius: 15%;\n}\n#keya:before {\n    content: \"A\";\n    position: absolute;\n    left: 0px;\n    top: 0px;\n    width: 40px;\n    height: 40px;\n    border-radius: 15%;\n    background-color: rgba(255,255,255,0.5);\n    scale: var(--scale-key-a);\n    transition: scale 0.2s;\n    color: var(--primary-color);\n}\n#keys {\n    position: absolute;\n    left: 0px;\n    top: 50px;\n    width: 40px;\n    height: 40px;\n    border-radius: 15%;\n}\n#keys:before {\n    content: \"S\";\n    position: absolute;\n    left: 0px;\n    top: 0px;\n    width: 40px;\n    height: 40px;\n    border-radius: 15%;\n    background-color: rgba(255,255,255,0.5);\n    scale: var(--scale-key-s);\n    transition: scale 0.2s;\n    color: var(--primary-color);\n}\n#keyd {\n    position: absolute;\n    left: 50px;\n    top: 50px;\n    width: 40px;\n    height: 40px;\n    border-radius: 15%;\n}\n#keyd:before {\n    content: \"D\";\n    position: absolute;\n    left: 0px;\n    top: 0px;\n    width: 40px;\n    height: 40px;\n    border-radius: 15%;\n    background-color: rgba(255,255,255,0.5);\n    scale: var(--scale-key-d);\n    transition: scale 0.2s;\n    color: var(--primary-color);\n}\n#keyspace {\n    position: absolute;\n    left: -55px;\n    top: 100px;\n    width: 150px;\n    height: 25px;\n    border-radius: 5px;\n    text-align: center;\n    line-height: 25px;\n}\n#keyspace:before {\n    content: \"Space\";\n    position: absolute;\n    left: 0px;\n    top: 0px;\n    width: 150px;\n    height: 25px;\n    border-radius: 5px;\n    background-color: rgba(255,255,255,0.5);\n    scale: var(--scale-key-space);\n    transition: scale 0.2s;\n    color: var(--primary-color);\n}\n.keys {\n    color: #fff;\n    background: #00000080;\n    box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.4);\n    text-align: center;\n    line-height: 40px;\n    color: var(--primary-color);\n    transition: 0.2s;\n}\n#fpsDisplay {\n    position: absolute;\n    display: none;\n    top: 29%;\n    left: 22%;\n    width: 80px;\n    height: 35px;\n    background: #00000080;\n    color: var(--primary-color);\n    border-radius: 5px;\n    font-size: 18px;\n    line-height: 35px;\n    text-align: center;\n    font-family: 'ADLaM Display';\n    z-index: 1000000;\n}\n#cpsDisplay {\n    position: absolute;\n    display: none;\n    top: 36%;\n    left: 22%;\n    width: 80px;\n    height: 35px;\n    background: #00000080;\n    color: var(--primary-color);\n    border-radius: 5px;\n    font-size: 18px;\n    line-height: 35px;\n    text-align: center;\n    font-family: 'ADLaM Display';\n    z-index: 1000000;\n}\n.fa-snowflake {\n    font-size: 25px;\n    color: gold;\n}\n#rankCardHolder {\n    position: absolute;\n    display: block;\n    background: #00000020;\n    text-align: center;\n    width: 280px;\n    height: 235px;\n    top: 15px;\n    left: 15px;\n    background: #00000080;\n    border-radius: 10px;\n    box-shadow: 0px 0px 20px #00000050;\n    color: white;\n}\n#userMainHolder {\n    display: grid;\n    flex-wrap: wrap;\n    grid-template-columns: repeat(2, 1fr);\n    grid-row-gap: 10px;\n    grid-auto-rows: min-content;\n    align-items: center;\n}\n.rankTitle {\n    height: 40px;\n    background: #00000050;\n    border-radius: 10px 10px 0 0;\n    color: var(--primary-color);\n    text-align: center;\n    line-height: 40px;\n    transition: 0.4s;\n    font-family: 'ADLaM Display';\n    font-size: 16px\n}\n#userHolder {\n    width: 100px;\n    height: 42px;\n    margin-left: 20px;\n    margin-top: 5px;\n    background: #00000050;\n    border-radius: 5px;\n}\n.userTitle {\n    height: 25px;\n    background: #00000020;\n    border-radius: 10px 10px 0 0;\n    color: var(--primary-color);\n    text-align: center;\n    line-height: 25px;\n    transition: 0.4s;\n    font-family: 'ADLaM Display';\n    font-size: 14px\n}\n#mouseTrackerHolder {\n    position: absolute;\n    display: none;\n    background: #00000080;\n    border-radius: 10px;\n    width: 150px;\n    height: 150px;\n    top: 48%;\n    left: 15px;\n}\n#mouseTracker {\n    position: absolute;\n    background: var(--primary-color);\n    width: 20px;\n    height: 20px;\n    border-radius: 50%;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n}\n#arrayListHolder {\n    position: absolute;\n    display: none;\n    top: 1%;\n    left: 50%;\n    width: auto;\n    height: auto;\n    transform: scaleX(-1);\n}\n.arrayList {\n    width: auto;\n    height: auto;\n}\n.arrayListElement {\n    position: relative;\n    display: none;\n    color: white;\n    background: #00000080;\n    padding-left: 5px;\n    padding-right: 5px;\n    width: auto;\n    height: auto;\n    transform: scaleX(-1);\n}\n.lineBreaker {\n    display: none;\n}\n.arrayListElementSuffix {\n    background: linear-gradient(to left, #FFF 20%, var(--primary-color) 40%, var(--primary-color) 60%, #FFF 80%);\n    background-size: 200% auto;\n    color: #000;\n    background-clip: text;\n    text-fill-color: transparent;\n    -webkit-background-clip: text;\n    -webkit-text-fill-color: transparent;\n    animation: gradient 2s linear infinite;\n}\n@keyframes gradient {\n    to {\n      background-position: -200% center;\n    }\n}\nbody {\n    -ms-overflow-style: none;\n    scrollbar-width: none;\n}\n::-webkit-scrollbar {\n    display: none;\n}\n.smoothScroll {\n    scroll-behavior: smooth;\n}\n.blur {\n    backdrop-filter: blur(5px);\n}\n.inline-block {\n    display: inline-block;\n}\n")), document.body.append(concept), document.body.append(dark), document.body.append(healthInfo), document.body.append(shameInfo), document.body.append(debuggerHolder), document.body.append(resourcesHolder), document.getElementById("mainMenu").append(rankCardHolder), document.body.append(fpsDisplay), document.body.append(cpsDisplay), document.body.append(arraylist), document.body.append(keystrokes), document.body.append(mouseTrackerHolder), document.body.append(notificationHolder), document.body.appendChild(ConceptCSS);
+var toggleSound = new Audio("https://audio.jukehost.co.uk/tSoRraDNEdLIy47VFE7c0CIbCtS9F31n");
+const tabs = ["#sectionTab1", "#sectionTab2", "#sectionTab3", "#sectionTab4", "#sectionTab5"],
+    externalTab = ["#combat", "#player", "#render", "#config", "#themes"],
+    themes = ["#theme1", "#theme2", "#theme3", "#theme4", "#theme5", "#theme6", "#theme7", "#theme8", "#theme9", "#theme10", "#theme11", "#theme12", "#theme13", "#theme14", "#theme15"],
+    themesColor = ["#7289DA", "#fc50a1", "#89da72", "#358aea", "#fc5076", "#00FA9A", "#29dbd5", "#6f5dd6", "#fcd650", "#365486", "#8f72da", "#ff7518", "#ccc", "#EDB7ED", "#da8f72"],
+    renderToggles = ["#render1", "#render2", "#render3", "#render4", "#render5", "#render6", "#render7", "#render8", "#render9", "#render10", "#render11", "#render12", "#render13", "#render14", "#render15", "#render16", "#render17", "#render18", "#render19", "#render20", "#render21", "#render22", "#render23", "#render24", "#render25"],
+    renderExternal = ["#gameUI", "#storeButton", "#chatButton", "#allianceButton", "#leaderboard", "#killCounter", "#scoreDisplay", "#foodDisplay", "#woodDisplay", "#stoneDisplay", "#mapDisplay", "#ageText", "#ageBarContainer", "#actionBar", "#notificationHolder", "#healthInfo", "#shameInfo", "#resourcesHolder", "#keystrokes", "#dark", "#fpsDisplay", "#cpsDisplay", "#mouseTrackerHolder", "#debugger", "#arrayListHolder"],
+    combatToggles = ["#combat1", "#combat2", "#combat3", "#combat4", "#combat5"],
+    arrayCombatToggles = [
+        ["#arrayListElement6", "#arrayListElement7", "#arrayListElement1", "#arrayListElement5", "#arrayListElement3"],
+        ["#br6", "#br7", "#br1", "#br5", "#br3"]
+    ],
+    combatExternal = [!1, !1, !1, !1, !1],
+    playerToggles = ["#player1", "#player2", "#player3", "#player4"],
+    arrayPlayerToggles = [
+        ["#arrayListElement2", "#arrayListElement4", "#arrayListElement9", "#arrayListElement8"],
+        ["#br2", "#br4", "#br9", "#br8"]
+    ],
+    playerExternal = [!1, !1, !1, !1],
+    hudElements = [],
+    blurElements = ["#notificationTab", ".keys", ".sections", "#resourcesHolder", "#debugger", "#healthInfo", "#fpsDisplay", "#rankCardHolder", "#mouseTrackerHolder", "#shameInfo"];
+$(document).ready(function() {
+    $("#menu").css("transform", "scale(" + localStorage.getItem("menuScale") + ")"), $("#menu").css("opacity", localStorage.getItem("menuOpacity")), $("#storeHolder").css("height", localStorage.getItem("storeHeight") + "px"), $("#storeHolder").css("scale", localStorage.getItem("storeScale")), $("#debugger").css("scale", localStorage.getItem("debuggerScale")), $("#keystrokes").css("scale", localStorage.getItem("keystrokesScale")), $("#fpsDisplay").css("scale", localStorage.getItem("fpsScale")), $("#cpsDisplay").css("scale", localStorage.getItem("cpsScale")), $(healthInfo).css("scale", localStorage.getItem("healthScale")), $(shameInfo).css("scale", localStorage.getItem("shameScale")), $("#resourcesHolder").css("scale", localStorage.getItem("resourcesScale")), $("#mouseTrackerHolder").css("scale", localStorage.getItem("mouseScale")), $("#mouseTracker").css("scale", localStorage.getItem("mouseTrackerScale")), $("#arrayListHolder").css("transform", "scale(" + localStorage.getItem("modulesListScale") + "," + localStorage.getItem("modulesListScale") + ")"), $("#dark").css("background", "rgba(0, 0, 0, " + darkStrength / 100 + ")"), scrollSmooth && $("#storeHolder").addClass("smoothScroll"), fastMode ? fastMode && blurElements.forEach(e => {
+        $(e).removeClass("blur")
+    }) : blurElements.forEach(e => {
+        $(e).addClass("blur")
+    }), themes.forEach((e, t) => {
+        $(e).css("border-top", themesColor[t] + " solid 40px")
+    }), themes.forEach((e, t) => {
+        $(e).on("click", function() {
+            const e = $(this);
+            $(themes.join(",")).removeClass("selected"), e.addClass("selected"), $(":root").css("--primary-color", themesColor[t])
+        })
+    });
+    tabs.forEach((e, t) => {
+        $(e).on("click", function() {
+            var e;
+            e = externalTab[t], externalTab.forEach(e => $(e).hide()), $(e).show().css("display", e == externalTab[3] ? "block" : "grid").hide().show("slide", {
+                direction: "left"
+            }, 200)
+        })
+    }), renderToggles.forEach((e, t) => {
+        $(e).on("click", function() {
+            $(renderExternal[t]).fadeToggle(400)
+        })
+    }), combatToggles.forEach((e, t) => {
+        $(e).on("click", function() {
+            combatExternal[t] = !combatExternal[t], console.log(combatExternal[t]), $(arrayCombatToggles[0][t]).css("display", combatExternal[t] ? "inline-block" : "none"), $(arrayCombatToggles[1][t]).css("display", combatExternal[t] ? "inline-block" : "none")
+        })
+    }), playerToggles.forEach((e, t) => {
+        $(e).on("click", function() {
+            playerExternal[t] = !playerExternal[t], console.log(playerExternal[t]), $(arrayPlayerToggles[0][t]).css("display", playerExternal[t] ? "inline-block" : "none"), $(arrayPlayerToggles[1][t]).css("display", playerExternal[t] ? "block" : "none")
+        })
+    }), $(".toggleButton").on("click", function() {
+        this.innerText = "Enable" == this.innerText ? "Disable" : "Enable", $("#notificationHolder").is(":visible") && notification.add("Enable" == this.innerText ? "Toggled OFF" : "Toggled ON")
+    }), $(document).on("click", tabs.join(","), function() {
+        const e = $(this);
+        $(tabs.join(",")).removeClass("focused"), e.addClass("focused")
+    }), document.addEventListener("keydown", e => {
+        if (e.key !== localStorage.getItem("menuKey") || "chatbox" === document.activeElement.id.toLowerCase() || $("#terminalInput").is(":focus") || menuIsToggling || "none" != document.getElementById("storeMenu").style.display || "none" != document.getElementById("allianceMenu").style.display || (menuIsToggling = !0, $("#menu").fadeToggle(400, () => {
+                menuToggled = !menuToggled, menuIsToggling = !1
+            }), $("#menu").css("transform", "scale(${menuToggled ? 0 : 1})")), "Enter" === e.key && "none" == document.getElementById("chatHolder").style.display && ($("#chatHolder").css("display", $("#terminalInput").is(":visible") || $("#menu").is(":visible") ? "block" : "none"), $("#chatBox").css("display", $("#terminalInput").is(":visible") || $("#menu").is(":visible") ? "none" : "inline-block"), $("#terminalInput").is(":visible") || $("#menu").is(":visible") ? $("#chatBox").blur() : $("#chatBox").focus(), $("#terminalInput").is(":visible") ? $("#terminalInput").focus() : $("#terminalInput").blur()), !$("#terminalInput").is(":visible") && !$("#menu").is(":visible")) {
+            if ("block" == document.getElementById("keystrokes").style.display && (87 === e.keyCode && "chatbox" !== document.activeElement.id.toLowerCase() && ($(":root").css("--scale-key-w", "1"), $("#keyw").css("box-shadow", "0px 0px 8px 3px rgba(255,255,255,0.3)")), 65 === e.keyCode && "chatbox" !== document.activeElement.id.toLowerCase() && ($(":root").css("--scale-key-a", "1"), $("#keya").css("box-shadow", "0px 0px 8px 3px rgba(255,255,255,0.3)")), 83 === e.keyCode && "chatbox" !== document.activeElement.id.toLowerCase() && ($(":root").css("--scale-key-s", "1"), $("#keys").css("box-shadow", "0px 0px 8px 3px rgba(255,255,255,0.3)")), 68 === e.keyCode && "chatbox" !== document.activeElement.id.toLowerCase() && ($(":root").css("--scale-key-d", "1"), $("#keyd").css("box-shadow", "0px 0px 8px 3px rgba(255,255,255,0.3)")), 32 === e.keyCode && "chatbox" !== document.activeElement.id.toLowerCase() && ($(":root").css("--scale-key-space", "1"), $("#keyspace").css("box-shadow", "0px 0px 8px 3px rgba(255,255,255,0.3)"))), e.key !== localStorage.getItem("instaKillKey") || !combatExternal[3] || "chatbox" === document.activeElement.id.toLowerCase() || $("#terminalInput").is(":focus") || instaIsHolding || (instaIsHolding = !0, doinsta(instaType)), combatExternal[0] && "chatbox" !== document.activeElement.id.toLowerCase() && (spike = e.key === localStorage.getItem("placeMacroSpikeKey") || spike, spawnPad = e.key === localStorage.getItem("placeMacroSpawnpadKey") || spawnPad, food = e.key === localStorage.getItem("placeMacroFoodKey") || food, mill = e.key === localStorage.getItem("placeMacroMillKey") || mill, trap = e.key === localStorage.getItem("placeMacroTrapKey") || trap, wall = e.key === localStorage.getItem("placeMacroWallKey") || wall, turret = e.key === localStorage.getItem("placeMacroTpKey") || turret), playerExternal[2] && "chatbox" !== document.activeElement.id.toLowerCase()) {
+                window.send(["G", [e.key === localStorage.getItem("rebindMacroFoodKey") ? foodType : e.key === localStorage.getItem("rebindMacroSpikeKey") ? spikeType : e.key === localStorage.getItem("rebindMacroTrapKey") ? boostType : e.key === localStorage.getItem("rebindMacroMillKey") ? millType : e.key === localStorage.getItem("rebindMacroWallKey") ? wallType : e.key === localStorage.getItem("rebindMacroTpKey") ? turretType : e.key === localStorage.getItem("rebindMacroSpawnpadKey") ? spawnpadType : null]]);
+                let t = "";
+                e.key === localStorage.getItem("rebindMacroFoodKey") ? t = "Food" : e.key === localStorage.getItem("rebindMacroSpikeKey") ? t = "Spike" : e.key === localStorage.getItem("rebindMacroTrapKey") ? t = "Trap/Boost" : e.key === localStorage.getItem("rebindMacroMillKey") ? t = "WindMill" : e.key === localStorage.getItem("rebindMacroWallKey") ? t = "Wall" : e.key === localStorage.getItem("rebindMacroTpKey") ? t = "Teleport/Turret" : e.key === localStorage.getItem("rebindMacroSpawnpadKey") && (t = "Spawnpad"), "" !== t && debug.addLine("Equipped " + t)
+            }
+            playerExternal[0] && "chatbox" !== document.activeElement.id.toLowerCase() && (e.key === localStorage.getItem("scrollSoldierKey") ? (FrozenHelper.scroll(1200), debug.addLine("Scrolled to soldier hat")) : e.key === localStorage.getItem("scrollBullKey") ? (FrozenHelper.scroll(1450), debug.addLine("Scrolled to bull hat")) : e.key === localStorage.getItem("scrollTurretKey") ? (FrozenHelper.scroll(1850), debug.addLine("Scrolled to turret hat")) : e.key === localStorage.getItem("scrollTankKey") ? (FrozenHelper.scroll(2100), debug.addLine("Scrolled to tank hat")) : e.key === localStorage.getItem("scrollBiomeKey") && (players.get(mySID).y > 6850 && players.get(mySID).y < 7550 ? FrozenHelper.scroll(1e3) : players.get(mySID).y < 2400 ? FrozenHelper.scroll(800) : FrozenHelper.scroll(1550), debug.addLine("Scrolled to biome hat"))), combatExternal[1] && "chatbox" !== document.activeElement.id.toLowerCase() && (e.key === localStorage.getItem("macroSoldierKey") ? (FrozenHelper.EquipHat(6), debug.addLine("Equipped soldier hat")) : e.key === localStorage.getItem("macroBullKey") ? (FrozenHelper.EquipHat(7), debug.addLine("Equipped bull hat")) : e.key === localStorage.getItem("macroTurretKey") ? (FrozenHelper.EquipHat(53), debug.addLine("Equipped turret hat")) : e.key === localStorage.getItem("macroTankKey") ? (FrozenHelper.EquipHat(40), debug.addLine("Equipped tank hat")) : e.key === localStorage.getItem("macroBiomeKey") && (players.get(mySID).y > 6850 && players.get(mySID).y < 7550 ? FrozenHelper.EquipHat(31) : players.get(mySID).y < 2400 ? FrozenHelper.EquipHat(15) : FrozenHelper.EquipHat(12), debug.addLine("Equipped biome hat")))
+        }
+    }), document.addEventListener("keyup", e => {
+        combatExternal[0] && "chatbox" !== document.activeElement.id.toLowerCase() && (spike = e.key !== localStorage.getItem("placeMacroSpikeKey") && spike, spawnPad = e.key !== localStorage.getItem("placeMacroSpawnpadKey") && spawnPad, food = e.key !== localStorage.getItem("placeMacroFoodKey") && food, mill = e.key !== localStorage.getItem("placeMacroMillKey") && mill, trap = e.key !== localStorage.getItem("placeMacroTrapKey") && trap, wall = e.key !== localStorage.getItem("placeMacroWallKey") && wall, turret = e.key !== localStorage.getItem("placeMacroTpKey") && turret), e.key === localStorage.getItem("instaKillKey") && combatExternal[3] && "chatbox" !== document.activeElement.id.toLowerCase() && !$("#terminalInput").is(":focus") && (instaIsHolding = !1), "block" == document.getElementById("keystrokes").style.display && (87 === e.keyCode && "chatbox" !== document.activeElement.id.toLowerCase() && ($(":root").css("--scale-key-w", "0"), $("#keyw").css("box-shadow", "0px 0px 8px 3px rgba(0, 0, 0, 0.3)")), 65 === e.keyCode && "chatbox" !== document.activeElement.id.toLowerCase() && ($(":root").css("--scale-key-a", "0"), $("#keya").css("box-shadow", "0px 0px 8px 3px rgba(0, 0, 0, 0.3)")), 83 === e.keyCode && "chatbox" !== document.activeElement.id.toLowerCase() && ($(":root").css("--scale-key-s", "0"), $("#keys").css("box-shadow", "0px 0px 8px 3px rgba(0, 0, 0, 0.3)")), 68 === e.keyCode && "chatbox" !== document.activeElement.id.toLowerCase() && ($(":root").css("--scale-key-d", "0"), $("#keyd").css("box-shadow", "0px 0px 8px 3px rgba(0, 0, 0, 0.3)")), 32 === e.keyCode && "chatbox" !== document.activeElement.id.toLowerCase() && ($(":root").css("--scale-key-space", "0"), $("#keyspace").css("box-shadow", "0px 0px 8px 3px rgba(0, 0, 0, 0.3)")))
+    });
+    let e = !0,
+        t = !0;
+    document.getElementById("touch-controls-fullscreen").addEventListener("mousedown", a => {
+        window.send(["K", [1]]), combatExternal[2] && (0 == a.button && e ? (debug.addLine("Pressed left mouse macro"), "bull" == mouseMacroLeft ? FrozenHelper.EquipHat(7) : "tank" == mouseMacroLeft && FrozenHelper.EquipHat(40), e = !1, setTimeout(() => {
+            e = !0
+        }, 111)) : 2 == a.button && t && (debug.addLine("Pressed right mouse macro"), "bull" == mouseMacroRight ? FrozenHelper.EquipHat(7) : "tank" == mouseMacroRight && FrozenHelper.EquipHat(40), t = !1, setTimeout(() => {
+            t = !0
+        }, 111))), !combatExternal[4] || 0 !== a.button && 2 !== a.button || (AutoClickerClicking = !0)
+    }), document.getElementById("touch-controls-fullscreen").addEventListener("mouseup", e => {
+        window.send(["K", [1]]), !combatExternal[2] || 0 !== e.button && 2 !== e.button || FrozenHelper.EquipHat(6), !combatExternal[4] || 0 !== e.button && 2 !== e.button || (AutoClickerClicking = !1)
+    }), document.getElementById("touch-controls-fullscreen").addEventListener("mousemove", FrozenHelper.updateMouseTracker), document.getElementById("touch-controls-fullscreen").addEventListener("mouseout", FrozenHelper.resetMouseTracker), document.addEventListener("mousemove", FrozenHelper.updateMouseTracker), document.addEventListener("mouseout", FrozenHelper.resetMouseTracker), new MutationObserver(e => {
+        e.forEach(e => {
+            "killCounter" === e.target.id && function(e) {
+                if (e > killsCounter) {
+                    let t = FrozenHelper.replaceStringValue(killChat, {
+                        kills: e
+                    });
+                    killsCounter = e;
+                    let a = localStorage.getItem("userKills"),
+                        o = parseInt(a);
+                    o++, localStorage.setItem("userKills", o), playerExternal[3] && (window.send(["6", [t]]), debug.addLine("Said kill chat"))
+                }
+            }(parseInt(e.target.innerText, 10) || 0)
+        })
+    }).observe(document, {
+        subtree: !0,
+        childList: !0
+    }), FrozenHelper.makeDraggable("arrayListHolder"), FrozenHelper.makeDraggable("healthInfo"), FrozenHelper.makeDraggable("shameInfo"), FrozenHelper.makeDraggable("debugger"), FrozenHelper.makeDraggable("resourcesHolder"), FrozenHelper.makeDraggable("keystrokes"), FrozenHelper.makeDraggable("fpsDisplay"), FrozenHelper.makeDraggable("cpsDisplay"), FrozenHelper.makeDraggable("mouseTrackerHolder");
+    const a = ["/help", "/reset", "/config", "/config.settings", "/config.load", "/ping", "/clear", "/fastmode", "/menu.key", "/menu.scale", "/menu.opacity", "/store.height", "/store.scale", "/notification.volume", "/notification.sound", "/instakill.key", "/instakill.type", "/instakill.scroll", "/instakill.aim", "/autoheal.ammount", "/autoheal.speed", "/placemacro.global.speed", "/placemacro.food.speed", "/placemacro.spike.speed", "/placemacro.trap.speed", "/placemacro.wall.speed", "/placemacro.tp.speed", "/placemacro.wall.speed", "/placemacro.mill.speed", "/placemacro.spawnpad.speed", "/placemacro.food.key", "/placemacro.spike.key", "/placemacro.trap.key", "/placemacro.wall.key", "/placemacro.tp.key", "/placemacro.wall.key", "/placemacro.mill.key", "/placemacro.spawnpad.key", "/rebind.food.key", "/rebind.spike.key", "/rebind.trap.key", "/rebind.wall.key", "/rebind.tp.key", "/rebind.wall.key", "/rebind.mill.key", "/rebind.spawnpad.key", "/autoclicker.speed", "/autoscroll.smooth", "/autoscroll.soldier.key", "/autoscroll.bull.key", "/autoscroll.turret.key", "/autoscroll.tank.key", "/autoscroll.biome.key", "/hatmacro.soldier.key", "/hatmacro.bull.key", "/hatmacro.turret.key", "/hatmacro.tank.key", "/hatmacro.biome.key", "/mousemacro.left", "/mousemacro.right", "/killchat", "/render.dark.strength", "/render.resourcesinfo.scale", "/render.healthinfo.scale", "/render.shameinfo.scale", "/render.keystrokes.scale", "/render.fpsdisplay.scale", "/render.cpsdisplay.scale", "/render.debugger.clear", "/render.debugger.scale", "/render.mousetracker.scale", "/render.mousepointer.scale", "/render.moduleslist.scale"],
+        o = document.getElementById("terminalInput"),
+        l = document.getElementById("predict");
+    let n = "",
+        r = "";
+    const s = e => e.split("").map((e, t) => t < n.length ? e === n[t] ? e : n[t].toUpperCase() === e ? e.toLowerCase() : e.toUpperCase() : e).join("");
+    o.addEventListener("input", () => {
+        l.innerHTML = "", n = o.value;
+        for (const e of a)
+            if (e.toLowerCase().startsWith(n.toLowerCase()) && "" !== o.value) {
+                r = s(e), l.innerHTML = r;
+                break
+            }
+    }), o.addEventListener("keydown", e => {
+        if ("Enter" !== e.key) return;
+        const t = o.value.trim(),
+            a = () => {
+                o.value = "", r = "", l.innerHTML = r
+            };
+        if (t.startsWith("/help")) FrozenHelper.addCommand("All available commands and values at this moment: "), ["", "[object]: food, spike, trap, mill, wall tp, spawnpad", "[hat]: soldier, bull, turret, tank, biome", "[type]: bull, tank", "", "/reset", "/config", "/config.settings", "/config.load [url to JSON file]", "/ping", "/clear", "/fastmode", "", "/menu.key [key]", "/menu.scale [1-3]", "/menu.opacity [1-3]", "", "/store.height [height]", "/store.scale [1-3]", "", "/notification.volume [0-1]", "/notification.sound [0-3]", "", "/instakill.key [key]", "/instakill.type [normal,reverse,onetick,spike]", "/instakill.scroll", "/instakill.aim", "", "/autoheal.speed [0-1000]", "/autoheal.amount [1-3]", "", "/placemacro.[object].speed [speed]", "/placemacro.[object].key [key]", "", "/rebind.[object].key [key]", "", "/autoclicker.speed [speed]", "", "/autoscroll.smooth", "/autoscroll.[hat].key [key]", "", "/hatmacro.[hat].key [key]", "", "/mousemacro.left [type]", "/mousemacro.right [type]", "", "/killchat [message, ${kills} = says total kills, can be used with text]", "", "/render.dark.strength [0-100]", "/render.debugger.clear", "/render.debugger.scale [1-3]", "/render.resourcesinfo.scale [1-3]", "/render.healthinfo.scale [1-3]", "/render.shameinfo.scale [1-3]", "/render.keystrokes.scale [1-3]", "/render.fpsdisplay.scale [1-3]", "/render.cpsdisplay.scale [1-3]", "/render.mousetracker.scale [1-3", "/render.mousepointer.scale [1-3]", "/render.moduleslist.scale [1-3]", ""].forEach(e => FrozenHelper.addCommand(e)), a();
+        else if (t.startsWith("/reset")) FrozenHelper.addCommand("Successfully reset the entire config"), notification.add("Reset config"), FrozenHelper.loadConfigFromFile("https://frozen-client-recode.glitch.me/configs/config.json", function(e) {
+            e && FrozenHelper.setLocalStorageItemsFromConfig(e)
+        }), a();
+        else {
+            const [e, o] = t.split(" ");
+            switch (e) {
+                case "/menu.key":
+                    const a = t.slice(9).trim().slice(0, 6).toLowerCase();
+                    FrozenHelper.addCommand("Client menu key set to: " + a), localStorage.setItem("menuKey", a);
+                    break;
+                case "/menu.scale":
+                    const l = t.slice(11).trim().slice(0, 3);
+                    FrozenHelper.addCommand("Client menu scale set to: " + (l > 3 ? 3 : l)), localStorage.setItem("menuScale", l > 3 ? 3 : l), $("#menu").css("transform", "scale(" + (l > 3 ? 3 : l) + ")");
+                    break;
+                case "/menu.opacity":
+                    const n = t.slice(13).trim().slice(0, 3);
+                    FrozenHelper.addCommand("Client menu opacity set to: " + (n > 1 ? 1 : n)), localStorage.setItem("menuOpacity", n > 1 ? 1 : n), $("#menu").css("opacity", n > 1 ? 1 : n);
+                    break;
+                case "/instakill.key":
+                    const r = o.charAt(0).toLowerCase();
+                    FrozenHelper.addCommand("Insta kill key set to: " + r), localStorage.setItem("instaKillKey", r), instaKey = r;
+                    break;
+                case "/instakill.type":
+                    const s = t.slice(15).trim().slice(0, 7).toLowerCase();
+                    FrozenHelper.addCommand("Insta kill type set to: " + s), localStorage.setItem("instaKillType", s), instaType = s;
+                    break;
+                case "/instakill.aim":
+                    localStorage.setItem("instaKillAim", !instaaim), instaaim = localStorage.getItem("instaKillAim"), instaaim = JSON.parse(instaaim), FrozenHelper.addCommand("Insta kill AutoAim has been: " + (1 == instaaim ? "Enabled" : "Disabled"));
+                    break;
+                case "/instakill.scroll":
+                    localStorage.setItem("instaKillScroll", !scrollinsta), scrollinsta = localStorage.getItem("instaKillScroll"), scrollinsta = JSON.parse(scrollinsta), console.log("scrollinsta value:", scrollinsta), FrozenHelper.addCommand("Insta kill AutoScroll has been: " + (1 == scrollinsta ? "Enabled" : "Disabled"));
+                    break;
+                case "/notification.volume":
+                    const i = t.slice(20).trim().slice(0, 3);
+                    FrozenHelper.addCommand("Notification volume set to: " + (i > 1 ? 1 : i)), localStorage.setItem("notificationVolume", i > 1 ? 1 : i);
+                    break;
+                case "/notification.sound":
+                    const c = t.slice(19).trim().slice(0, 3);
+                    FrozenHelper.addCommand("Notification sound set to: " + (c > 3 ? 3 : c)), localStorage.setItem("notificationSound", c > 3 ? 3 : c);
+                    break;
+                case "/autoheal.ammount":
+                    const d = t.slice(17).trim().slice(0, 1);
+                    FrozenHelper.addCommand("Auto Heal ammount set to: " + (d > 3 ? 3 : d)), localStorage.setItem("healAssistHealAmmount", d > 3 ? 3 : d), healAmmount = d;
+                    break;
+                case "/autoheal.speed":
+                    const m = t.slice(15).trim().slice(0, 4);
+                    FrozenHelper.addCommand("Auto Heal speed set to: " + (m > 1e3 ? 1e3 : m)), localStorage.setItem("healAssistHealSpeed", m > 1e3 ? 1e3 : m), healSpeed = m;
+                    break;
+                case "/placemacro.global.speed":
+                    const p = t.slice(24).trim().slice(0, 3);
+                    FrozenHelper.addCommand("Placement macro global speed set to: " + p), localStorage.setItem("placeMacroGlobalSpeed", p), placementMacroGlobalSpeed = p, localStorage.setItem("placeMacroFoodSpeed", p), localStorage.setItem("placeMacroSpikeSpeed", p), localStorage.setItem("placeMacroTrapSpeed", p), localStorage.setItem("placeMacroSpawnpadSpeed", p), localStorage.setItem("placeMacroMillSpeed", p), localStorage.setItem("placeMacroWallSpeed", p), localStorage.setItem("placeMacroTpSpeed", p), placementMacroTpSpeed = p, changePlacementMacroSpeed();
+                    break;
+                case "/placemacro.food.speed":
+                    const g = t.slice(22).trim().slice(0, 3);
+                    FrozenHelper.addCommand("Placement macro food speed set to: " + g), localStorage.setItem("placeMacroFoodSpeed", g), placementMacroFoodSpeed = g, changePlacementMacroSpeed();
+                    break;
+                case "/placemacro.food.key":
+                    const u = t.slice(20).trim().slice(0, 3).toLowerCase();
+                    FrozenHelper.addCommand("Placement macro food key set to: " + u), localStorage.setItem("placeMacroFoodKey", u), placementMacroFoodKey = u;
+                    break;
+                case "/placemacro.spike.speed":
+                    const y = t.slice(23).trim().slice(0, 3);
+                    FrozenHelper.addCommand("Placement macro spike speed set to: " + y), localStorage.setItem("placeMacroSpikeSpeed", y), placementMacroSpikeSpeed = y, changePlacementMacroSpeed();
+                    break;
+                case "/placemacro.spike.key":
+                    const b = t.slice(21).trim().slice(0, 3).toLowerCase();
+                    FrozenHelper.addCommand("Placement macro spike key set to: " + b), localStorage.setItem("placeMacroSpikeKey", b), placementMacroSpikeKey = b;
+                    break;
+                case "/placemacro.trap.speed":
+                    const k = t.slice(22).trim().slice(0, 3);
+                    FrozenHelper.addCommand("Placement macro trap speed set to: " + k), localStorage.setItem("placeMacroTrapSpeed", k), placementMacroTrapSpeed = k, changePlacementMacroSpeed();
+                    break;
+                case "/placemacro.trap.key":
+                    const h = t.slice(20).trim().slice(0, 3).toLowerCase();
+                    FrozenHelper.addCommand("Placement macro trap key set to: " + h), localStorage.setItem("placeMacroTrapKey", h), placementMacroTrapKey = h;
+                    break;
+                case "/placemacro.mill.speed":
+                    const S = t.slice(22).trim().slice(0, 3);
+                    FrozenHelper.addCommand("Placement macro mill speed set to: " + S), localStorage.setItem("placeMacroMillSpeed", S), placementMacroMillSpeed = S, changePlacementMacroSpeed();
+                    break;
+                case "/placemacro.mill.key":
+                    const f = t.slice(20).trim().slice(0, 3).toLowerCase();
+                    FrozenHelper.addCommand("Placement macro mill key set to: " + f), localStorage.setItem("placeMacroMillKey", f), placementMacroMillKey = f;
+                    break;
+                case "/placemacro.wall.speed":
+                    const x = t.slice(22).trim().slice(0, 3);
+                    FrozenHelper.addCommand("Placement macro wall speed set to: " + x), localStorage.setItem("placeMacroWallSpeed", x), placementMacroWallSpeed = x, changePlacementMacroSpeed();
+                    break;
+                case "/placemacro.wall.key":
+                    const I = t.slice(20).trim().slice(0, 3).toLowerCase();
+                    FrozenHelper.addCommand("Placement macro wall key set to: " + I), localStorage.setItem("placeMacroWallKey", I), placementMacroWallKey = I;
+                    break;
+                case "/placemacro.tp.speed":
+                    const w = t.slice(20).trim().slice(0, 3);
+                    FrozenHelper.addCommand("Placement macro teleport speed set to: " + w), localStorage.setItem("placeMacroTpSpeed", w), placementMacroTpSpeed = w, changePlacementMacroSpeed();
+                    break;
+                case "/placemacro.tp.key":
+                    const v = t.slice(18).trim().slice(0, 3).toLowerCase();
+                    FrozenHelper.addCommand("Placement macro teleport key set to: " + v), localStorage.setItem("placeMacroTpKey", v), placementMacroTpKey = v;
+                    break;
+                case "/placemacro.spawnpad.speed":
+                    const T = t.slice(26).trim().slice(0, 3).toLowerCase();
+                    FrozenHelper.addCommand("Placement macro spawnpad speed set to: " + T), localStorage.setItem("placeMacroSpawnpadSpeed", T), placementMacroSpawnpadSpeed = T, changePlacementMacroSpeed();
+                    break;
+                case "/placemacro.spawnpad.key":
+                    const H = t.slice(24).trim().slice(0, 3).toLowerCase();
+                    FrozenHelper.addCommand("Placement macro spawnpad key set to: " + H), localStorage.setItem("placeMacroSpawnpadKey", H), placementMacroSpawnpadKey = H;
+                    break;
+                case "/rebind.food.key":
+                    const M = t.slice(16).trim().slice(0, 3).toLowerCase();
+                    FrozenHelper.addCommand("Rebind food key set to: " + M), localStorage.setItem("rebindMacroFoodKey", M), rebindFoodKey = M;
+                    break;
+                case "/rebind.spike.key":
+                    const E = t.slice(17).trim().slice(0, 3).toLowerCase();
+                    FrozenHelper.addCommand("Rebind spike key set to: " + E), localStorage.setItem("rebindMacroSpikeKey", E), rebindSpikeKey = E;
+                    break;
+                case "/rebind.trap.key":
+                    const C = t.slice(16).trim().slice(0, 3).toLowerCase();
+                    FrozenHelper.addCommand("Rebind trap key set to: " + C), localStorage.setItem("rebindMacroTrapKey", C), rebindTrapKey = C;
+                    break;
+                case "/rebind.mill.key":
+                    const F = t.slice(17).trim().slice(0, 3).toLowerCase();
+                    FrozenHelper.addCommand("Rebind mill key set to: " + F), localStorage.setItem("rebindMacroMillKey", F), rebindMillKey = F;
+                    break;
+                case "/rebind.wall.key":
+                    const L = t.slice(17).trim().slice(0, 3).toLowerCase();
+                    FrozenHelper.addCommand("Rebind wall key set to: " + L), localStorage.setItem("rebindMacroWallKey", L), rebindWallKey = L;
+                    break;
+                case "/rebind.tp.key":
+                    const K = t.slice(15).trim().slice(0, 3).toLowerCase();
+                    FrozenHelper.addCommand("Rebind tp key set to: " + K), localStorage.setItem("rebindMacroTpKey", K), rebindTpKey = K;
+                    break;
+                case "/rebind.spawnpad.key":
+                    const z = t.slice(20).trim().slice(0, 3).toLowerCase();
+                    FrozenHelper.addCommand("Rebind spawnpad key set to: " + z), localStorage.setItem("rebindMacroSpawnpadKey", z), rebindSpawnpadKey = z;
+                    break;
+                case "/autoclicker.speed":
+                    const D = t.slice(18).trim().slice(0, 3).toLowerCase();
+                    FrozenHelper.addCommand("Auto clicker speed set to: " + D), localStorage.setItem("autoClickerSpeed", D), autoClickerSpeed = D, changeAutoClickerSpeed();
+                    break;
+                case "/autoscroll.smooth":
+                    localStorage.setItem("scrollSmooth", !scrollSmooth), scrollSmooth = localStorage.getItem("scrollSmooth"), scrollSmooth = JSON.parse(scrollSmooth), FrozenHelper.addCommand("Auto scroll smoothness has been: " + (1 == scrollSmooth ? "Enabled" : "Disabled")), 1 == scrollSmooth ? $("#storeHolder").addClass("smoothScroll") : $("#storeHolder").removeClass("smoothScroll");
+                    break;
+                case "/autoscroll.soldier.key":
+                    const B = t.slice(23).trim().slice(0, 3).toLowerCase();
+                    FrozenHelper.addCommand("Auto scroll soldier ket set to: " + B), localStorage.setItem("scrollSoldierKey", B), scrollSoldierKey = B;
+                    break;
+                case "/autoscroll.bull.key":
+                    const A = t.slice(20).trim().slice(0, 3).toLowerCase();
+                    FrozenHelper.addCommand("Auto scroll bull ket set to: " + A), localStorage.setItem("scrollBullKey", A), scrollBullKey = A;
+                    break;
+                case "/autoscroll.turret.key":
+                    const P = t.slice(22).trim().slice(0, 3).toLowerCase();
+                    FrozenHelper.addCommand("Auto scroll turret ket set to: " + P), localStorage.setItem("scrollTurretKey", P), scrollTurretKey = P;
+                    break;
+                case "/autoscroll.tank.key":
+                    const R = t.slice(20).trim().slice(0, 3).toLowerCase();
+                    FrozenHelper.addCommand("Auto scroll tank ket set to: " + R), localStorage.setItem("scrollTankKey", R), scrollTankKey = R;
+                    break;
+                case "/autoscroll.biome.key":
+                    const q = t.slice(21).trim().slice(0, 3).toLowerCase();
+                    FrozenHelper.addCommand("Auto scroll biome ket set to: " + q), localStorage.setItem("scrollBiomeKey", q), scrollBiomeKey = q;
+                    break;
+                case "/hatmacro.soldier.key":
+                    const W = t.slice(21).trim().slice(0, 3).toLowerCase();
+                    FrozenHelper.addCommand("Hat macro soldier ket set to: " + W), localStorage.setItem("macroSoldierKey", W), macroSoldierKey = W;
+                    break;
+                case "/hatmacro.bull.key":
+                    const N = t.slice(18).trim().slice(0, 3).toLowerCase();
+                    FrozenHelper.addCommand("Hat macro bull ket set to: " + N), localStorage.setItem("macroBullKey", N), macroBullKey = N;
+                    break;
+                case "/hatmacro.turret.key":
+                    const O = t.slice(20).trim().slice(0, 3).toLowerCase();
+                    FrozenHelper.addCommand("Hat macro turret ket set to: " + O), localStorage.setItem("macroTurretKey", O), macroTurretKey = O;
+                    break;
+                case "/hatmacro.tank.key":
+                    const G = t.slice(18).trim().slice(0, 3).toLowerCase();
+                    FrozenHelper.addCommand("Hat macro tank ket set to: " + G), localStorage.setItem("macroTankKey", G), macroTankKey = G;
+                    break;
+                case "/hatmacro.biome.key":
+                    const j = t.slice(19).trim().slice(0, 3).toLowerCase();
+                    FrozenHelper.addCommand("Hat macro biome ket set to: " + j), localStorage.setItem("macroBiomeKey", j), macroBiomeKey = j;
+                    break;
+                case "/mousemacro.left":
+                    const V = t.slice(16).trim().slice(0, 4).toLowerCase();
+                    FrozenHelper.addCommand("Left mouse macro set to: " + V), localStorage.setItem("mouseMacroLeft", V), mouseMacroLeft = V;
+                    break;
+                case "/mousemacro.right":
+                    const U = t.slice(17).trim().slice(0, 4).toLowerCase();
+                    FrozenHelper.addCommand("Right mouse macro set to: " + U), localStorage.setItem("mouseMacroRight", U), mouseMacroRight = U;
+                    break;
+                case "/render.dark.strength":
+                    const Y = t.slice(21).trim().slice(0, 3);
+                    FrozenHelper.addCommand("Dark strength set to: " + (Y > 100 ? 100 : Y)), localStorage.setItem("darkStrength", Y > 100 ? 100 : Y), darkStrength = Y, $("#dark").css("background", "rgba(0, 0, 0, " + darkStrength / 100 + ")");
+                    break;
+                case "/render.debugger.clear":
+                    FrozenHelper.addCommand("Debugger has been cleared"), clearDebugger();
+                    break;
+                case "/render.debugger.scale":
+                    const J = t.slice(22).trim().slice(0, 3);
+                    FrozenHelper.addCommand("Debugger scale set to: " + (J > 3 ? 3 : J)), localStorage.setItem("debuggerScale", J > 3 ? 3 : J), $("#debugger").css("transform", "scale(" + (J > 3 ? 3 : J) + ")");
+                    break;
+                case "/render.keystrokes.scale":
+                    const Q = t.slice(25).trim().slice(0, 3);
+                    FrozenHelper.addCommand("keystrokes scale set to: " + (Q > 3 ? 3 : Q)), localStorage.setItem("keystrokesScale", Q > 3 ? 3 : Q), $("#keystrokes").css("transform", "scale(" + (Q > 3 ? 3 : Q) + ")");
+                    break;
+                case "/render.healthinfo.scale":
+                    const X = t.slice(24).trim().slice(0, 3);
+                    FrozenHelper.addCommand("Health info scale set to: " + (X > 3 ? 3 : X)), localStorage.setItem("healthScale", X > 3 ? 3 : X), $(healthInfo).css("transform", "scale(" + (X > 3 ? 3 : X) + ")");
+                    break;
+                case "/render.shameinfo.scale":
+                    const _ = t.slice(23).trim().slice(0, 3);
+                    FrozenHelper.addCommand("Shame info scale set to: " + (_ > 3 ? 3 : _)), localStorage.setItem("shameScale", _ > 3 ? 3 : _), $(shameInfo).css("transform", "scale(" + (_ > 3 ? 3 : _) + ")");
+                    break;
+                case "/render.resourcesinfo.scale":
+                    const Z = t.slice(27).trim().slice(0, 3);
+                    FrozenHelper.addCommand("Resources info scale set to: " + (Z > 3 ? 3 : Z)), localStorage.setItem("resourcesScale", Z > 3 ? 3 : Z), $("#resourcesHolder").css("transform", "scale(" + (Z > 3 ? 3 : Z) + ")");
+                    break;
+                case "/render.fpsdisplay.scale":
+                    const ee = t.slice(24).trim().slice(0, 3);
+                    FrozenHelper.addCommand("Fps display scale set to: " + (ee > 3 ? 3 : ee)), localStorage.setItem("fpsScale", ee > 3 ? 3 : ee), $("#fpsDisplay").css("transform", "scale(" + (ee > 3 ? 3 : ee) + ")");
+                    break;
+                case "/render.cpsdisplay.scale":
+                    const te = t.slice(24).trim().slice(0, 3);
+                    FrozenHelper.addCommand("Cps display scale set to: " + (te > 3 ? 3 : te)), localStorage.setItem("cpsScale", te > 3 ? 3 : te), $("#cpsDisplay").css("transform", "scale(" + (te > 3 ? 3 : te) + ")");
+                    break;
+                case "/render.mousetracker.scale":
+                    const ae = t.slice(26).trim().slice(0, 3);
+                    FrozenHelper.addCommand("Mouse tracker scale set to: " + (ae > 3 ? 3 : ae)), localStorage.setItem("mouseScale", ae > 3 ? 3 : ae), $("#mouseTrackerHolder").css("transform", "scale(" + (ae > 3 ? 3 : ae) + ")");
+                    break;
+                case "/render.mousepointer.scale":
+                    const oe = t.slice(26).trim().slice(0, 3);
+                    FrozenHelper.addCommand("Mouse tracker pointer scale set to: " + (oe > 3 ? 3 : oe)), localStorage.setItem("mouseTrackerScale", oe > 3 ? 3 : oe), $("#mouseTracker").css("transform", "scale(" + (oe > 3 ? 3 : oe) + ")");
+                    break;
+                case "/render.moduleslist.scale":
+                    const le = t.slice(25).trim().slice(0, 3);
+                    FrozenHelper.addCommand("Modules list scale set to: " + (le > 3 ? 3 : le)), localStorage.setItem("modulesListScale", le > 3 ? 3 : le), $("#arrayListHolder").css("transform", "scale(" + (le > 3 ? 3 : le) + ")");
+                    break;
+                case "/store.height":
+                    const ne = t.slice(13).trim().slice(0, 3);
+                    FrozenHelper.addCommand("Store height set to: " + ne), localStorage.setItem("storeHeight", ne), $("#storeHolder").css("height", localStorage.getItem("storeHeight") + "px");
+                    break;
+                case "/store.scale":
+                    const re = t.slice(12).trim().slice(0, 3);
+                    FrozenHelper.addCommand("Store scale set to: " + (re > 3 ? 3 : re)), localStorage.setItem("storeScale", re > 3 ? 3 : re), $("#storeHolder").css("scale", localStorage.getItem("storeScale"));
+                    break;
+                case "/config":
+                    FrozenHelper.addCommand("Current config sent to console"), FrozenHelper.getCurrentConfig();
+                    break;
+                case "/config.settings":
+                    FrozenHelper.addCommand("Current config: "), ["Client menu key: " + localStorage.getItem("menuKey"), "Client menu scale: " + localStorage.getItem("menuScale"), "Client menu opacity: " + localStorage.getItem("menuOpacity"), "Store menu height: " + localStorage.getItem("storeHeight"), "Store menu scale: " + localStorage.getItem("storeScale"), "Notification volume: " + localStorage.getItem("notificationVolume"), "Instakill type: " + localStorage.getItem("instaKillType"), "Instakill key: " + localStorage.getItem("instaKillKey"), "Instakill autoscroll: " + localStorage.getItem("instaKillScroll"), "Instakill autoaim: " + localStorage.getItem("instaKillAim"), "AutoHeal speed: " + localStorage.getItem("healAssistHealSpeed"), "AutoHeal ammount: " + localStorage.getItem("healAssistHealAmmount"), "Place macro global speed: " + localStorage.getItem("placeMacroGlobalSpeed"), "Place macro food speed: " + localStorage.getItem("placeMacroFoodSpeed"), "Place macro spike speed: " + localStorage.getItem("placeMacroSpikeSpeed"), "Place macro trap speed: " + localStorage.getItem("placeMacroTrapSpeed"), "Place macro wall speed: " + localStorage.getItem("placeMacroWallSpeed"), "Place macro tp speed: " + localStorage.getItem("placeMacroTpSpeed"), "Place macro spawnpad speed: " + localStorage.getItem("placeMacroSpawnpadSpeed"), "Place macro food key: " + localStorage.getItem("placeMacroFoodKey"), "Place macro spike key: " + localStorage.getItem("placeMacroSpikeKey"), "Place macro trap key: " + localStorage.getItem("placeMacroTrapKey"), "Place macro wall key: " + localStorage.getItem("placeMacroWallKey"), "Place macro tp key: " + localStorage.getItem("placeMacroTpKey"), "Place macro mill key: " + localStorage.getItem("placeMacroMillKey"), "Place macro spawnpad key: " + localStorage.getItem("placeMacroSpawnpadKey"), "Rebind macro food key: " + localStorage.getItem("rebindMacroFoodKey"), "Rebind macro spike key: " + localStorage.getItem("rebindMacroSpikeKey"), "Rebind macro trap key: " + localStorage.getItem("rebindMacroTrapKey"), "Rebind macro Wall key: " + localStorage.getItem("rebindMacroWallKey"), "Rebind macro tp key: " + localStorage.getItem("rebindMacroTpKey"), "Rebind macro mill key: " + localStorage.getItem("rebindMacroMillKey"), "Rebind macro spawnpad key: " + localStorage.getItem("rebindMacroSpawnpadKey"), "Auto scroll smoothness: " + localStorage.getItem("scrollSmooth"), "Auto scroll soldier key: " + localStorage.getItem("scrollSoldierKey"), "Auto scroll bull key: " + localStorage.getItem("scrollBullKey"), "Auto scroll turret key: " + localStorage.getItem("scrollTurretKey"), "Auto scroll tank key: " + localStorage.getItem("scrollTankKey"), "Auto scroll biome key: " + localStorage.getItem("scrollBiomeKey"), "Hat macro soldier key: " + localStorage.getItem("macroSoldierKey"), "Hat macro bull key: " + localStorage.getItem("macroBullKey"), "Hat macro turret key: " + localStorage.getItem("macroTurretKey"), "Hat macro tank key: " + localStorage.getItem("macroTankKey"), "Hat macro biome key: " + localStorage.getItem("macroBiomeKey"), "Mouse left macro: " + localStorage.getItem("mouseMacroLeft"), "Mouse right macro: " + localStorage.getItem("mouseMacroRight"), "Kill chat message: " + localStorage.getItem("killChat"), "Dark mode Strength: " + localStorage.getItem("darkStrength"), "Debugger scale: " + localStorage.getItem("debuggerScale"), "Health info scale: " + localStorage.getItem("healthScale"), "Resources info scale: " + localStorage.getItem("resourcesScale"), "Keystrokes scale: " + localStorage.getItem("keystrokesScale"), "FPS display scale: " + localStorage.getItem("fpsScale"), "CPS display scale: " + localStorage.getItem("cpsScale"), "Mouse tracker scale: " + localStorage.getItem("mouseScale"), "Mouse tracker pointer scale: " + localStorage.getItem("mouseTrackerScale"), "Modules list scale: " + localStorage.getItem("modulesListScale"), "Fast mode: " + localStorage.getItem("fastMode"), "Auto clicker speed: " + localStorage.getItem("autoClickerSpeed")].forEach(e => FrozenHelper.addCommand(e));
+                    break;
+                case "/config.load":
+                    const se = t.slice(12).trim();
+                    FrozenHelper.addCommand("Loaded config from: " + se), FrozenHelper.loadConfigFromFile(se, function(e) {
+                        e && (FrozenHelper.setLocalStorageItemsFromConfig(e), FrozenHelper.updateArrayListSuffix())
+                    });
+                    break;
+                case "/ping":
+                    FrozenHelper.addCommand("Pong!, ping: " + document.getElementById("pingDisplay").innerText.slice(4));
+                    break;
+                case "/killchat":
+                    const ie = t.slice(9).trim().slice(0, 30);
+                    FrozenHelper.addCommand("Kill chat message set to: " + ie), localStorage.setItem("killChat", ie), killChat = ie;
+                    break;
+                case "/clear":
+                    document.getElementById("terminalOutput").innerHTML = "";
+                    break;
+                case "/fastmode":
+                    localStorage.setItem("fastMode", !fastMode), fastMode = localStorage.getItem("fastMode"), fastMode = JSON.parse(fastMode), FrozenHelper.addCommand("Fast mode has been: " + (1 == fastMode ? "Enabled" : "Disabled")), fastMode ? fastMode && blurElements.forEach(e => {
+                        $(e).removeClass("blur")
+                    }) : blurElements.forEach(e => {
+                        $(e).addClass("blur")
+                    });
+                    break;
+                default:
+                    FrozenHelper.addCommand("Invalid command")
+            }
+            a(), FrozenHelper.updateArrayListSuffix()
+        }
+    })
+});
+var players = new Map;
+let mySID = void 0,
+    allies = [];
+var ws, mouseX, mouseY, width, height, primary, secondary, foodType, wallType, spikeType, millType, mineType, boostType, turretType, spawnpadType, menuIsToggling = !1,
+    menuToggled = !0,
+    instaKey = localStorage.getItem("instaKillKey"),
+    scrollinsta = JSON.parse(localStorage.getItem("instaKillScroll")),
+    instaaim = JSON.parse(localStorage.getItem("instaKillAim")),
+    instaType = localStorage.getItem("instaKillType"),
+    instaIsHolding = !1,
+    darkStrength = localStorage.getItem("darkStrength"),
+    StoreHolder = document.getElementById("storeHolder"),
+    healAmmount = localStorage.getItem("healAssistHealAmmount"),
+    healSpeed = localStorage.getItem("healAssistHealSpeed"),
+    placementMacroGlobalSpeed = localStorage.getItem("placeMacroGlobalSpeed"),
+    placementMacroFoodSpeed = localStorage.getItem("placeMacroFoodSpeed"),
+    placementMacroSpikeSpeed = localStorage.getItem("placeMacroSpikeSpeed"),
+    placementMacroTrapSpeed = localStorage.getItem("placeMacroTrapSpeed"),
+    placementMacroWallSpeed = localStorage.getItem("placeMacroWallSpeed"),
+    placementMacroTpSpeed = localStorage.getItem("placeMacroTpSpeed"),
+    placementMacroSpawnpadSpeed = localStorage.getItem("placeMacroSpawnpadSpeed"),
+    placementMacroMillSpeed = localStorage.getItem("placeMacroMillSpeed"),
+    placementMacroFoodKey = localStorage.getItem("placeMacroFoodKey"),
+    placementMacroSpikeKey = localStorage.getItem("placeMacroSpikeKey"),
+    placementMacroTrapKey = localStorage.getItem("placeMacroTrapKey"),
+    placementMacroWallKey = localStorage.getItem("placeMacroWallKey"),
+    placementMacroTpKey = localStorage.getItem("placeMacroTpKey"),
+    placementMacroSpawnpadKey = localStorage.getItem("placeMacroSpawnpadKey"),
+    placementMacroMillKey = localStorage.getItem("placeMacroMillKey"),
+    rebindFoodKey = localStorage.getItem("rebindMacroFoodKey"),
+    rebindSpikeKey = localStorage.getItem("rebindMacroSpikeKey"),
+    rebindTrapKey = localStorage.getItem("rebindMacroTrapKey"),
+    rebindWallKey = localStorage.getItem("rebindMacroWallKey"),
+    rebindTpKey = localStorage.getItem("rebindMacroTpKey"),
+    rebindSpawnpadKey = localStorage.getItem("rebindMacroSpawnpadKey"),
+    rebindMillKey = localStorage.getItem("rebindMacroMillKey"),
+    scrollSmooth = localStorage.getItem("scrollSmooth"),
+    scrollSoldierKey = localStorage.getItem("scrollSoldierKey"),
+    scrollBullKey = localStorage.getItem("scrollBullKey"),
+    scrollTurretKey = localStorage.getItem("scrollTurretKey"),
+    scrollTankKey = localStorage.getItem("scrollTankKey"),
+    scrollBiomeKey = localStorage.getItem("scrollTankKey"),
+    macroSoldierKey = localStorage.getItem("macroSoldierKey"),
+    macroBullKey = localStorage.getItem("macroBullKey"),
+    macroTurretKey = localStorage.getItem("macroTurretKey"),
+    macroTankKey = localStorage.getItem("macroTankKey"),
+    macroBiomeKey = localStorage.getItem("macroBiomeKey"),
+    mouseMacroLeft = localStorage.getItem("mouseMacroLeft"),
+    mouseMacroRight = localStorage.getItem("mouseMacroRight"),
+    fastMode = JSON.parse(localStorage.getItem("fastMode")),
+    killChat = localStorage.getItem("killChat"),
+    killsCounter = 0;
+const bar = document.querySelector(".circleHealth-bar"),
+    radius = bar.getAttribute("r"),
+    bar2 = document.querySelector(".circleShame-bar"),
+    radius2 = bar.getAttribute("r");
+var myPlayerHealth = 0,
+    myPlayerShame = 0;
+const foodText = document.getElementById("foodText"),
+    foodDisplay = document.getElementById("foodDisplay"),
+    woodText = document.getElementById("woodText"),
+    woodDisplay = document.getElementById("woodDisplay"),
+    stoneText = document.getElementById("stoneText"),
+    stoneDisplay = document.getElementById("stoneDisplay"),
+    goldText = document.getElementById("goldText"),
+    goldDisplay = document.getElementById("scoreDisplay");
+var canvasContext = document.getElementById("gameCanvas").getContext("2d"),
+    canvas = document.getElementById("gameCanvas"),
+    totalKills = localStorage.getItem("userKills"),
+    autoClickerSpeed = localStorage.getItem("autoClickerSpeed"),
+    AutoClickerClicking = !1,
+    playTime = localStorage.getItem("userPlayTime") ? parseInt(localStorage.getItem("userPlayTime")) : 0,
+    currentTotalKills = localStorage.getItem("userKills"),
+    kdr = null !== parseFloat(localStorage.getItem("userKills")) && null !== parseFloat(localStorage.getItem("userDeaths")) && 0 !== parseFloat(localStorage.getItem("userKills")) && 0 !== parseFloat(localStorage.getItem("userDeaths")) ? (parseFloat(localStorage.getItem("userKills")) / parseFloat(localStorage.getItem("userDeaths"))).toFixed(2) : "N/A",
+    spike = !1,
+    trap = !1,
+    mill = !1,
+    food = !1,
+    turret = !1,
+    wall = !1,
+    spawnPad = !1;
+document.msgpack = msgpack;
+var movementDirection, msgpack5 = msgpack,
+    lastUpdate = 0,
+    frames = 0,
+    fps = 0,
+    cps = 0,
+    enemiesNear = [],
+    nearestEnemy = [],
+    buildings = [],
+    enemyAng = 0;
+setInterval(() => {
+    playTime += 60, localStorage.setItem("userPlayTime", playTime)
+}, 6e4), WebSocket.prototype.oldSend = WebSocket.prototype.send, WebSocket.prototype.send = function(e) {
+    ws || (document.ws = this, ws = this, socketFound(this)), "INPUT" === document.activeElement.tagName && "chatbox" !== document.activeElement.id.toLowerCase() || this.oldSend(e)
+};
+const getDistance = (e, t, a, o) => Math.sqrt((a -= e) * a + (o -= t) * o),
+    getDirection = (e, t, a, o) => Math.atan2(t - o, e - a),
+    getAngleDist = (e, t) => {
+        let a = Math.abs(t - e) % (2 * Math.PI);
+        return a > Math.PI ? 2 * Math.PI - a : a
+    },
+    toRad = e => .01745329251 * e,
+    socketFound = e => {
+        e.addEventListener("message", function(e) {
+            handleMessage(e)
+        })
+    };
+[...Array(50)].map((e, t) => t).forEach(e => {
+    players.set(e, {}), players.get(e).lastShame = players.get(e).shameCount = 0
+});
+const handleMessage = e => {
+    let t, a = msgpack5.decode(new Uint8Array(e.data));
+    a.length > 1 ? (t = [a[0], ...a[1]])[1] instanceof Array && (t = t) : t = a;
+    let o = t[0];
+    if (t) {
+        if ("io-init" === o) {
+            Object.defineProperty(Object.prototype, "turnSpeed", {
+                set() {
+                    this[Symbol("turnSpeed")] = 0
+                }
+            });
+            let e = document.getElementById("gameCanvas");
+            width = e.clientWidth, height = e.clientHeight, $(e).resize(function() {
+                width = e.clientWidth, height = e.clientHeight
+            }), e.addEventListener("mousemove", e => {
+                mouseX = e.clientX, mouseY = e.clientY
+            })
+        }
+        if ("P" == o) {
+            let e = localStorage.getItem("userDeaths"),
+                t = parseInt(e);
+            t++, localStorage.setItem("userDeaths", t), myPlayerHealth = 0, myPlayerShame = 0, debug.addLine("Died")
+        }
+        if ("C" == o && (mySID = t[1], myPlayerHealth = 100, myPlayerShame = 0, debug.addLine("Spawned")), "O" == o && players.has(t[1])) {
+            const e = players.get(t[1]),
+                a = e.health - t[2];
+            if (t[1] == mySID && t[2] && (myPlayerHealth = Math.max(0, t[2])), t[1] == mySID && t[2] < 99 && playerExternal[1] && setTimeout(() => {
+                    for (let e = 0; e < healAmmount; e++) window.place(foodType);
+                    debug.addLine("Healed")
+                }, healSpeed), void 0 === e.health && (e.health = 100), void 0 === e.shameCount && (e.shameCount = 0), a > 0) e.lastDamage = Date.now(), a >= 45 && (e.lastBulled = Date.now());
+            else if (a < 0 && (Date.now() - e.lastBulled <= 337.5 && Date.now() - e.lastBulled <= 125 && e.shameCount > players.get(e.sid).lastShame && (players.get(e.sid).lastShame = e.shameCount + 1), void 0 !== e.lastDamage)) {
+                const t = Date.now() - e.lastDamage;
+                e.lastDamage = void 0, t <= 125 ? e.shameCount++ : e.shameCount = Math.max(e.shameCount - 2, 0)
+            }
+            e.health = t[2], myPlayerShame = players.get(mySID).shameCount
+        }
+        if ("a" == o) {
+            updateItems(), enemiesNear = [];
+            for (let e = 0; e < t[1].length / 13; e++) {
+                const a = t[1].slice(13 * e, 13 * e + 13);
+                players.has(a[0]) && (players.get(a[0]).sid = a[0], players.get(a[0]).lastx = players.get(a[0]).x, players.get(a[0]).lasty = players.get(a[0]).y, players.get(a[0]).x = a[1], players.get(a[0]).y = a[2], players.get(a[0]).xvel = players.get(a[0]).lastx - a[1], players.get(a[0]).yvel = players.get(a[0]).lasty - a[2], players.get(a[0]).dir = a[3], players.get(a[0]).buildIndex = a[4], players.get(a[0]).weaponIndex = a[5], players.get(a[0]).weaponVariant = a[6], players.get(a[0]).team = a[7], players.get(a[0]).isLeader = a[8], players.get(a[0]).skinIndex = a[9], players.get(a[0]).tailIndex = a[10], players.get(a[0]).iconIndex = a[11], players.get(a[0]).zIndex = a[12], players.get(a[0]).visible = !0, players.get(a[0]).weaponIndex < 9 ? players.get(a[0]).primaryVariant = a[6] : players.get(a[0]).secondaryVariant = a[6], 45 == players.get(a[0]).skinIndex && players.get(a[0]).shameCount < 8 ? players.get(a[0]).shameCount = 8 : 45 !== players.get(a[0]).skinIndex && 8 == players.get(a[0]).shameCount && (players.get(a[0]).shameCount = 0), mySID === a[0] ? null === players.get(mySID).team && (allies = []) : null !== a[7] && players.get(mySID).team === a[7] || enemiesNear.push(a))
+            }
+            enemiesNear && (nearestEnemy = enemiesNear.sort(function(e, t) {
+                return getDistance(e[1], e[2], players.get(mySID).x, players.get(mySID).y) - getDistance(t[1], t[2], players.get(mySID).x, players.get(mySID).y)
+            })[0]), enemyAng = nearestEnemy ? getDirection(nearestEnemy[1], nearestEnemy[2], players.get(mySID).x, players.get(mySID).y) : players.get(mySID).dir
+        }
+    }
+};
+window.send = (e => {
+    ws.send(new Uint8Array(Array.from(msgpack5.encode(e))))
+}), window.place = ((e, t) => {
+    window.send(["G", [e, null]]), window.send(["d", [1, t]]), window.send(["d", [0, t]]), window.send(["G", [players.get(mySID).weaponIndex, !0]])
+});
+const update = () => {
+    const e = 2 * Math.PI * radius - myPlayerHealth / 100 * (2 * Math.PI * radius);
+    bar.style.strokeDashoffset = e;
+    const t = 2 * Math.PI * radius2 - Math.max(0, myPlayerShame) / 8 * (2 * Math.PI * radius2);
+    bar2.style.strokeDashoffset = t;
+    var a = arraylist.getBoundingClientRect(),
+        o = window.innerWidth || document.documentElement.clientWidth;
+    const l = [...document.querySelectorAll(".arrayListElement, .lineBreaker")].reduce((e, t, a, o) => a % 2 == 0 ? [...e, [t, o[a + 1]]] : e, []),
+        n = l.map(e => e[0].offsetWidth),
+        r = [...Array(l.length).keys()].sort((e, t) => n[t] - n[e]),
+        s = document.getElementById("arrayList"),
+        i = r.every((e, t) => e === t);
+    "block" == document.getElementById("resourcesHolder").style.display && (foodText.innerText = FrozenHelper.formatNumber(foodDisplay.innerText), woodText.innerText = FrozenHelper.formatNumber(woodDisplay.innerText), stoneText.innerText = FrozenHelper.formatNumber(stoneDisplay.innerText), goldText.innerText = FrozenHelper.formatNumber(goldDisplay.innerText)), a.left < o / 2 ? ($("#arrayListHolder").css("transform", "scale(" + localStorage.getItem("modulesListScale") + "," + localStorage.getItem("modulesListScale") + ")"), $(".arrayListElement").css("transform", "scale(1, 1)"), $(".arrayListElement").css("border-left", "solid 3.5px var(--primary-color)"), $(".arrayListElement").css("border-right", "solid 0px var(--primary-color)")) : ($("#arrayListHolder").css("transform", "scale(-" + localStorage.getItem("modulesListScale") + "," + localStorage.getItem("modulesListScale") + ")"), $(".arrayListElement").css("transform", "scale(-1, 1)"), $(".arrayListElement").css("border-right", "solid 3.5px var(--primary-color)"), $(".arrayListElement").css("border-left", "solid 0px var(--primary-color)")), i || r.forEach(e => {
+        const [t, a] = l[e];
+        s.appendChild(t), s.appendChild(a)
+    }), window.requestAnimationFrame(update)
+};
+window.requestAnimationFrame(update), lastUpdate = Date.now(), window.requestAnimationFrame(FrozenHelper.updateFps), setInterval(() => {
+    FrozenHelper.updateProfileInfo(parseInt(totalKills))
+}, 1e3), document.addEventListener("mousedown", FrozenHelper.updateCps, !1), FrozenHelper.updateCps();
+const isElementVisible = e => null !== e.offsetParent;
+FrozenHelper.updateArrayListSuffix();
+const updateItems = () => {
+        for (let e = 0; e < 9; e++) isElementVisible(document.getElementById("actionBarItem" + e.toString())) && (primary = e);
+        for (let e = 9; e < 16; e++) isElementVisible(document.getElementById("actionBarItem" + e.toString())) && (secondary = e);
+        for (let e = 16; e < 19; e++) isElementVisible(document.getElementById("actionBarItem" + e.toString())) && (foodType = e - 16);
+        for (let e = 19; e < 22; e++) isElementVisible(document.getElementById("actionBarItem" + e.toString())) && (wallType = e - 16);
+        for (let e = 22; e < 26; e++) isElementVisible(document.getElementById("actionBarItem" + e.toString())) && (spikeType = e - 16);
+        for (let e = 26; e < 29; e++) isElementVisible(document.getElementById("actionBarItem" + e.toString())) && (millType = e - 16);
+        for (let e = 29; e < 31; e++) isElementVisible(document.getElementById("actionBarItem" + e.toString())) && (mineType = e - 16);
+        for (let e = 31; e < 33; e++) isElementVisible(document.getElementById("actionBarItem" + e.toString())) && (boostType = e - 16);
+        for (let e = 33; e < 39; e++) isElementVisible(document.getElementById("actionBarItem" + e.toString())) && 36 != e && (turretType = e - 16);
+        spawnpadType = 36
+    },
+    doinsta = e => {
+        "normal" == e ? (debug.addLine("Did normal instakill"), 1 == scrollinsta && FrozenHelper.scroll(1450), FrozenHelper.EquipHat(7), window.send(["G", [primary, !0]]), 1 == instaaim ? (debug.addLine("Auto aimed to: " + enemyAng.toFixed(2)), window.send(["d", [1, enemyAng]]), window.send(["d", [0, enemyAng]])) : (window.send(["d", [1]]), window.send(["d", [0]])), setTimeout(() => {
+            1 == scrollinsta && FrozenHelper.scroll(1850), FrozenHelper.EquipHat(53), window.send(["G", [secondary, !0]]), 1 == instaaim ? (debug.addLine("Auto aimed to: " + enemyAng.toFixed(2)), window.send(["d", [1, enemyAng]]), window.send(["d", [0, enemyAng]])) : (window.send(["d", [1]]), window.send(["d", [0]]))
+        }, 110), setTimeout(() => {
+            1 == scrollinsta && FrozenHelper.scroll(1200), window.send(["G", [primary, !0]]), FrozenHelper.EquipHat(6)
+        }, 500)) : "reverse" == e ? (debug.addLine("Did reverse instakill"), 1 == scrollinsta && FrozenHelper.scroll(1850), FrozenHelper.EquipHat(53), window.send(["G", [secondary, !0]]), 1 == instaaim ? (debug.addLine("Auto aimed to: " + enemyAng.toFixed(2)), window.send(["d", [1, enemyAng]]), window.send(["d", [0, enemyAng]])) : (window.send(["d", [1]]), window.send(["d", [0]])), setTimeout(() => {
+            1 == scrollinsta && FrozenHelper.scroll(1450), FrozenHelper.EquipHat(7), window.send(["G", [primary, !0]]), 1 == instaaim ? (debug.addLine("Auto aimed to: " + enemyAng.toFixed(2)), window.send(["d", [1, enemyAng]]), window.send(["d", [0, enemyAng]])) : (window.send(["d", [1]]), window.send(["d", [0]]))
+        }, 110), setTimeout(() => {
+            1 == scrollinsta && FrozenHelper.scroll(1200), FrozenHelper.EquipHat(6)
+        }, 500)) : "onetick" == e ? (debug.addLine("Did onetick instakill"), scrollinsta && FrozenHelper.scroll(1850), FrozenHelper.EquipHat(53), setTimeout(() => {
+            scrollinsta && FrozenHelper.scroll(1450), FrozenHelper.EquipHat(7), window.send(["G", [primary, !0]]), 1 == instaaim ? (debug.addLine("Auto aimed to: " + enemyAng.toFixed(2)), window.send(["d", [1, enemyAng]]), window.send(["d", [0, enemyAng]])) : (window.send(["d", [1]]), window.send(["d", [0]]))
+        }, 95), setTimeout(() => {
+            1 == scrollinsta && FrozenHelper.scroll(1200), FrozenHelper.EquipHat(6)
+        }, 500)) : "spike" == e && (debug.addLine("Did spike instakill"), 1 == instaaim ? (debug.addLine("Auto aimed to: " + enemyAng.toFixed(2)), window.place(spikeType, enemyAng)) : window.place(spikeType), 1 == instaaim ? (debug.addLine("Auto aimed to: " + enemyAng.toFixed(2)), window.send(["d", [1, enemyAng]]), window.send(["d", [0, enemyAng]])) : (window.send(["d", [1]]), window.send(["d", [0]])), 1 == scrollinsta && FrozenHelper.scroll(1450), FrozenHelper.EquipHat(7), window.send(["G", [primary, !0]]), 1 == instaaim ? (debug.addLine("Auto aimed to: " + enemyAng.toFixed(2)), window.send(["d", [1, enemyAng]]), window.send(["d", [0, enemyAng]])) : (window.send(["d", [1]]), window.send(["d", [0]])), setTimeout(() => {
+            scrollinsta && FrozenHelper.scroll(1850), FrozenHelper.EquipHat(53)
+        }, 90), setTimeout(() => {
+            1 == scrollinsta && FrozenHelper.scroll(1200), FrozenHelper.EquipHat(6)
+        }, 200))
+    },
+    changeAutoClickerSpeed = () => {
+        clearInterval(AutoClicker), AutoClicker = setInterval(() => {
+            combatExternal[4] && AutoClickerClicking && (window.send(["d", [1]]), window.send(["d", [0]]))
+        }, autoClickerSpeed)
+    },
+    changePlacementMacroSpeed = () => {
+        clearInterval(foodI), clearInterval(spikeI), clearInterval(trapI), clearInterval(millI), clearInterval(turretI), clearInterval(wallI), clearInterval(spawnpadI), foodI = setInterval(() => {
+            food && window.place(foodType)
+        }, placementMacroFoodSpeed), spikeI = setInterval(() => {
+            spike && window.place(spikeType)
+        }, placementMacroSpikeSpeed), trapI = setInterval(() => {
+            trap && window.place(boostType)
+        }, placementMacroTrapSpeed), millI = setInterval(() => {
+            mill && window.place(millType)
+        }, placementMacroMillSpeed), wallI = setInterval(() => {
+            wall && window.place(wallType)
+        }, placementMacroWallSpeed), turretI = setInterval(() => {
+            turret && window.place(turretType)
+        }, placementMacroTpSpeed), spawnpadI = setInterval(() => {
+            spawnPad && window.place(spawnpadType)
+        }, placementMacroSpawnpadSpeed)
+    };
+let foodI = setInterval(() => {
+        food && window.place(foodType)
+    }, placementMacroFoodSpeed),
+    spikeI = setInterval(() => {
+        spike && window.place(spikeType)
+    }, placementMacroSpikeSpeed),
+    trapI = setInterval(() => {
+        trap && window.place(boostType)
+    }, placementMacroTrapSpeed),
+    millI = setInterval(() => {
+        mill && window.place(millType)
+    }, placementMacroMillSpeed),
+    wallI = setInterval(() => {
+        wall && window.place(wallType)
+    }, placementMacroWallSpeed),
+    turretI = setInterval(() => {
+        turret && window.place(turretType)
+    }, placementMacroTpSpeed),
+    spawnpadI = setInterval(() => {
+        spawnPad && window.place(spawnpadType)
+    }, placementMacroSpawnpadSpeed),
+    AutoClicker = setInterval(() => {
+        combatExternal[4] && AutoClickerClicking && (window.send(["d", [1]]), window.send(["d", [0]]))
+    }, autoClickerSpeed);
+class Notification {
+    add(e) {
+        if ($("#notificationHolder").is(":visible")) {
+            let t = '<div class="icon"><i class="fa-solid fa-info"></i></div>' + e + "<br>",
+                a = document.getElementById("notificationHolder"),
+                o = document.createElement("div");
+            toggleSound = "0" == localStorage.getItem("notificationSound") ? new Audio("https://audio.jukehost.co.uk/tSoRraDNEdLIy47VFE7c0CIbCtS9F31n") : "1" == localStorage.getItem("notificationSound") ? new Audio("https://audio.jukehost.co.uk/umqze5KX6HOtY2GR8z6X5GKBLq23Wgld") : "2" == localStorage.getItem("notificationSound") ? new Audio("https://audio.jukehost.co.uk/x3ku3z72EeG0tYimC5Zy4DEktJslFFvr") : "3" == localStorage.getItem("notificationSound") ? new Audio("https://audio.jukehost.co.uk/AghRHntaM6GVeHTkDqgJd56Efy4U24XE") : new Audio("https://audio.jukehost.co.uk/tSoRraDNEdLIy47VFE7c0CIbCtS9F31n"), o.id = "notificationTab", o.innerHTML = t, a.prepend(o), o.style.opacity = 0, o.style.boxShadow = "0px 7px 20px #00000080", toggleSound.volume = localStorage.getItem("notificationVolume"), toggleSound.currentTime = 0, toggleSound.play(), $(o).animate({
+                opacity: 1
+            }, 500), setTimeout(() => {
+                $(o).hide("fade", {
+                    direction: "left"
+                }, 300, function() {
+                    $(o).remove(), $(o).css("transform", "translateY(10px)")
+                })
+            }, 3500)
+        }
+    }
+}
+class Debugger {
+    addLine(e) {
+        "block" == document.getElementById("debugger").style.display && (document.getElementById("debuggerOutput").innerHTML += e + "<br>", document.getElementById("debuggerOutput").scrollTop = document.getElementById("debuggerOutput").scrollHeight)
+    }
+    clearDebugger() {
+        document.getElementById("debuggerOutput").innerHTML = ""
+    }
+}
+const notification = new Notification,
+    debug = new Debugger;
