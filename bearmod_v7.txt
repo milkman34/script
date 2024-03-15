@@ -1,0 +1,1717 @@
+// ==UserScript==
+// @name         /=|- B34R -|=\ /=\ Legit Script for Legit Players /=\
+// @namespace    none
+// @version      7
+// @description  ArrowUp Key = Modification Menu | ArrowLeft Key = Setting | ArrowRight Key = MainMenu | ArrowDown Key = InfoBox | Anti Ads | Remove Hats |
+// @author       Bear
+// @match        *://sploop.io/*
+// @require      http://code.jquery.com/jquery-3.3.1.min.js
+// @require      https://code.jquery.com/ui/1.12.0/jquery-ui.min.js
+// @grant        none
+// @icon         https://media.discordapp.net/attachments/1077687137455046718/1122722360420728913/DaB34R.png
+// ==/UserScript==
+(function() {
+    'use strict';
+    let versionN = "7";
+    // /=\ Sploop.io Tab Title /=\
+    document.title = 'Sploop.io (B34R Script Active!!)';
+    let modB = `
+<div class="bearMenu" id="bearModMenu" style="display: none;">
+    <div id="block-bind">
+        <div id="side-bar-menu">
+            <buttonbear onclick="switchPage('keybinds')">Keybinds</buttonbear>
+            <buttonbear onclick="switchPage('styler')">Elements</buttonbear>
+            <buttonbear onclick="switchPage('auto')">Auto</buttonbear>
+            <buttonbear onclick="switchPage('mod')">ModHUD</buttonbear>
+            <buttonbear onclick="switchPage('hatStoreBox')">Hat</buttonbear>
+            <buttonbear onclick="switchPage('credits')">Credits</buttonbear>
+        </div>
+    </div>
+    <div id="block-bind-b">
+        <div id="keybinds-page" class="page">
+            <fieldset>
+                <legend align="center">KeyBinds</legend>
+                <SettingText>Mod Menu Key: <br>
+                <input style="width: 100px;" id="modBind" class="inputTxt" onKeyPress=SupressInput(event); oncontextmenu="return false" placeholder="Bind..." value="ArrowUp" type="text">
+                </SettingText>
+                <br>
+                <SettingText>Info Key: <br>
+                <input style="width: 100px" id="infoBind" class="inputTxt" onKeyPress=SupressInput(event); oncontextmenu="return false" placeholder="Bind..." value="ArrowDown" type="text">
+                </SettingText>
+                <br>
+                <SettingText>Settings Key: <br>
+                <input style="width: 100px" id="settingsBind" class="inputTxt" onKeyPress=SupressInput(event); oncontextmenu="return false" placeholder="Bind..." value="ArrowLeft" type="text">
+                </SettingText>
+                <br>
+                <SettingText>HomePage Key: <br>
+                <input style="width: 100px" id="homeBind" class="inputTxt" onKeyPress=SupressInput(event); oncontextmenu="return false" placeholder="Bind..." value="ArrowRight" type="text">
+                </SettingText>
+            </fieldset>
+        </div>
+        <div id="styler-page" class="page">
+            <fieldset>
+                <legend align="center">Transparent</legend>
+                <fieldset>
+                    <SettingText>Transparent Hat Store
+                        <div class="toggle-container">
+                            <input type="checkbox" id="hatStore">
+                            <label for="hatStore"></label>
+                        </div>
+                    </SettingText>
+                    <br>
+                    <SettingText>Transparent Clan Menu
+                        <div class="toggle-container">
+                            <input type="checkbox" id="clanMenu">
+                            <label for="clanMenu"></label>
+                        </div>
+                    </SettingText>
+                    <br>
+                    <SettingText>Transparent Home Page
+                        <div class="toggle-container">
+                            <input type="checkbox" id="homeDisplay">
+                            <label for="homeDisplay"></label>
+                        </div>
+                    </SettingText>
+                </fieldset>
+            </fieldset>
+            <br>
+            <fieldset>
+                <legend align="center">Change Element</legend>
+                <fieldset>
+                    <legend align="center">Hat Store</legend>
+                    <SettingText>Bigger Hat Store
+                        <div class="toggle-container">
+                            <input type="checkbox" id="biggerHat">
+                            <label for="biggerHat"></label>
+                        </div>
+                    </SettingText>
+                    <br>
+                    <SettingText>Anti-Scroll
+                        <div class="toggle-container">
+                             <input type="checkbox" id="antiScroll">
+                             <label for="antiScroll"></label>
+                         </div>
+                    </SettingText>
+                    <br>
+                    <SettingText>Click-Thru [WIP]
+                    <div class="toggle-container">
+                    <input type="checkbox" id="clickThru">
+                    <label for="clickThru"></label>
+                    </div>
+                    </SettingText>
+                    <br>
+                    <SettingText>Naked Hat Store
+                        <div class="toggle-container">
+                            <input type="checkbox" id="nakedStore">
+                            <label for="nakedStore"></label>
+                        </div>
+                    </SettingText>
+                    <br>
+                    <SettingText>Skinny Hat Store
+                        <div class="toggle-container">
+                            <input type="checkbox" id="skinnyStore">
+                            <label for="skinnyStore"></label>
+                        </div>
+                    </SettingText>
+                </fieldset>
+                <br>
+                <fieldset>
+                    <legend align="center">Home Page</legend>
+                    <SettingText>Anti-Name Change
+                        <div class="toggle-container">
+                            <input type="checkbox" id="antiName">
+                            <label for="antiName"></label>
+                        </div>
+                    </SettingText>
+                </fieldset>
+        </div>
+        <div id="auto-page" class="page">
+            <fieldset>
+                <legend align="center">Auto Do</legend>
+                <SettingText>Auto Spawn
+                    <div class="toggle-container">
+                        <input type="checkbox" id="autoSpawn">
+                        <label for="autoSpawn"></label>
+                    </div>
+                </SettingText>
+            </fieldset>
+            <fieldset>
+                <legend align="center">Auto Mode</legend>
+                <SettingText>Classic
+                    <div class="toggle-container">
+                        <input type="checkbox" id="classicA">
+                        <label for="classicA"></label>
+                    </div>
+                </SettingText>
+                <br>
+                <SettingText>Sandbox
+                    <div class="toggle-container">
+                        <input type="checkbox" id="sandboxA">
+                        <label for="sandboxA"></label>
+                    </div>
+                </SettingText>
+                <br>
+                <SettingText>Battleroyale
+                    <div class="toggle-container">
+                        <input type="checkbox" id="brA">
+                        <label for="brA"></label>
+                    </div>
+                </SettingText>
+            </fieldset>
+        </div>
+        <div id="mod-page" class="page">
+            <fieldset>
+                <legend align="center">Infobox</legend>
+                <SettingText>Transparent
+                    <div class="toggle-container">
+                        <input type="checkbox" id="opacityDisplay">
+                        <label for="opacityDisplay"></label>
+                    </div>
+                    <br>
+                </SettingText>
+                <SettingText>Hide CPS
+                    <div class="toggle-container">
+                        <input type="checkbox" id="cpsDisplay">
+                        <label for="cpsDisplay"></label>
+                    </div>
+                    <br>
+                </SettingText>
+                <SettingText>Hide FPS
+                    <div class="toggle-container">
+                        <input type="checkbox" id="framesPerSecondDisplay">
+                        <label for="framesPerSecondDisplay"></label>
+                    </div>
+                </SettingText>
+                <br>
+                <SettingText>Hide Server
+                    <div class="toggle-container">
+                        <input type="checkbox" id="serverDisplay" checked>
+                        <label for="serverDisplay"></label>
+                    </div>
+                    <br>
+                </SettingText>
+                <SettingText>Hide GameMode
+                    <div class="toggle-container">
+                        <input type="checkbox" id="gameDisplay">
+                        <label for="gameDisplay"></label>
+                    </div>
+                </SettingText>
+            </fieldset>
+            <fieldset>
+                <legend align="center">Modmenu</legend>
+                <SettingText>Transparent
+                    <div class="toggle-container">
+                        <input type="checkbox" id="modDisplay">
+                        <label for="modDisplay"></label>
+                    </div>
+                </SettingText>
+                <br>
+                <SettingText>Remove Restrictions
+                <div class="toggle-container">
+                <input type="checkbox" id="removeRest">
+                <label for="removeRest"></label>
+                </div>
+                </SettingText>
+            </fieldset>
+        </div>
+        <div id="hatStoreBox-page" class="page">
+            <fieldset>
+                <legend align="center">Remove Hats</legend>
+                <fieldset>
+                    <SettingText>Remove BushHat
+                        <div class="toggle-container">
+                            <input type="checkbox" id="bushDisplay">
+                            <label for="bushDisplay"></label>
+                        </div>
+                    </SettingText>
+                    <br>
+                    <SettingText>Remove BerserkerHat
+                        <div class="toggle-container">
+                            <input type="checkbox" id="berserkerDisplay">
+                            <label for="berserkerDisplay"></label>
+                        </div>
+                    </SettingText>
+                    <br>
+                    <SettingText>Remove JungleHat
+                        <div class="toggle-container">
+                            <input type="checkbox" id="jungleDisplay">
+                            <label for="jungleDisplay"></label>
+                        </div>
+                    </SettingText>
+                    <br>
+                    <SettingText>Remove CrystalHat
+                        <div class="toggle-container">
+                            <input type="checkbox" id="crystalDisplay">
+                            <label for="crystalDisplay"></label>
+                        </div>
+                    </SettingText>
+                    <br>
+                    <SettingText>Remove SpikeHat
+                        <div class="toggle-container">
+                            <input type="checkbox" id="spikeDisplay">
+                            <label for="spikeDisplay"></label>
+                        </div>
+                    </SettingText>
+                    <br>
+                    <SettingText>Remove ImmunityHat
+                        <div class="toggle-container">
+                            <input type="checkbox" id="immunityDisplay">
+                            <label for="immunityDisplay"></label>
+                        </div>
+                    </SettingText>
+                    <br>
+                    <SettingText>Remove BoostHat
+                        <div class="toggle-container">
+                            <input type="checkbox" id="boostDisplay">
+                            <label for="boostDisplay"></label>
+                        </div>
+                    </SettingText>
+                    <br>
+                    <SettingText>Remove AppleHat
+                        <div class="toggle-container">
+                            <input type="checkbox" id="appleDisplay">
+                            <label for="appleDisplay"></label>
+                        </div>
+                    </SettingText>
+                    <br>
+                    <SettingText>Remove ScubaHat
+                        <div class="toggle-container">
+                            <input type="checkbox" id="scubaDisplay">
+                            <label for="scubaDisplay"></label>
+                        </div>
+                    </SettingText>
+                    <br>
+                    <SettingText>Remove HoodHat
+                        <div class="toggle-container">
+                            <input type="checkbox" id="hoodDisplay">
+                            <label for="hoodDisplay"></label>
+                        </div>
+                    </SettingText>
+                    <br>
+                    <SettingText>Remove DemolistHat
+                        <div class="toggle-container">
+                            <input type="checkbox" id="demolistDisplay">
+                            <label for="demolistDisplay"></label>
+                        </div>
+                    </SettingText>
+                </fieldset>
+                </fieldset>
+                <fieldset>
+                <legend align="center">Hat Groups</legend>
+                <fieldset>
+                <SettingText>PVP Hats Only[With Crystal Gear]
+                <div class="toggle-container">
+                <input type="checkbox" id="pvpHats">
+                <label for="pvpHats"></label>
+                </div>
+                </SettingText>
+                <br>
+                <SettingText>PVP Hats Only[With Immunity Gear]
+                <div class="toggle-container">
+                <input type="checkbox" id="pvpHatsImmunity">
+                <label for="pvpHatsImmunity"></label>
+                </div>
+                </SettingText>
+                <br>
+                <SettingText>Basic Hats Only
+                <div class="toggle-container">
+                <input type="checkbox" id="randomHats">
+                <label for="randomHats"></label>
+                </div>
+                </SettingText>
+                </fieldset>
+            </fieldset>
+        </div>
+        <div id="credits-page" class="page">
+            <fieldset>
+                <legend align="center">Credits</legend>
+                <fieldset>
+                    <SettingText>Author:
+                        <br> - B34R aka "DangerBear"
+                    </SettingText>
+                </fieldset>
+                <br>
+                <fieldset>
+                    <SettingText>Discord:
+                        <br> - bear_006 or bear_0006 or Bear_006, idk Discord nickname update got me confused.
+                    </SettingText>
+                </fieldset>
+                <br>
+                <fieldset>
+                    <SettingText>Support:
+                        <br> - offer Mi a cokie if u ci mi in game C:
+                        <br> - any suggestions/problems? Add me on Discord.
+                        <br> - Leave a comment in Greasyfork
+                        <br>
+                    </SettingText>
+                </fieldset>
+            </fieldset>
+        </div>
+    </div>
+<script>
+
+ function switchPage(pageName) {
+    var pages = document.getElementsByClassName('page');
+
+    for (var i = 0; i < pages.length; i++) {
+      var page = pages[i];
+      if (page.id === pageName + '-page') {
+        page.style.display = 'block';
+      } else {
+        page.style.display = 'none';
+      }
+    }
+  }
+
+  // Initialize the content on page load (optional)
+  window.addEventListener('DOMContentLoaded', function() {
+    var defaultPage = 'styler'; // Set the default page to display
+    switchPage(defaultPage);
+  });
+// Mod Menu Bind
+document.getElementById("modBind").addEventListener("mousedown", e => {
+        if (e.button == 0) {
+            $("#modBind").val("Select")
+            use3 = true
+        }
+        if (e.button == 2) {
+            $("#modBind").val("...")
+            use3 = false
+        }
+    })
+    document.getElementById("modBind").addEventListener('keydown', e => {
+        if ($("#modBind").focus()) {
+            if (use3) {
+                use3 = false
+                codeKey3 = (e.code).toString()
+                $("#modBind").val(codeKey3)
+            }
+        }
+    })
+    // Info Bind
+    document.getElementById("infoBind").addEventListener("mousedown", e => {
+        if (e.button == 0) {
+            $("#infoBind").val("Select")
+            use3 = true
+        }
+        if (e.button == 2) {
+            $("#infoBind").val("...")
+            use3 = false
+        }
+    })
+    document.getElementById("infoBind").addEventListener('keydown', e => {
+        if ($("#infoBind").focus()) {
+            if (use3) {
+                use3 = false
+                codeKey3 = (e.code).toString()
+                $("#infoBind").val(codeKey3)
+            }
+        }
+    })
+    // Settings Bind
+    document.getElementById("settingsBind").addEventListener("mousedown", e => {
+        if (e.button == 0) {
+            $("#settingsBind").val("Select")
+            use3 = true
+        }
+        if (e.button == 2) {
+            $("#settingsBind").val("...")
+            use3 = false
+        }
+    })
+    document.getElementById("settingsBind").addEventListener('keydown', e => {
+        if ($("#settingsBind").focus()) {
+            if (use3) {
+                use3 = false
+                codeKey3 = (e.code).toString()
+                $("#settingsBind").val(codeKey3)
+            }
+        }
+    })
+    // Homepage Bind
+    document.getElementById("homeBind").addEventListener("mousedown", e => {
+        if (e.button == 0) {
+            $("#homeBind").val("Select")
+            use3 = true
+        }
+        if (e.button == 2) {
+            $("#homeBind").val("...")
+            use3 = false
+        }
+    })
+    document.getElementById("homeBind").addEventListener('keydown', e => {
+        if ($("#homeBind").focus()) {
+            if (use3) {
+                use3 = false
+                codeKey3 = (e.code).toString()
+                $("#homeBind").val(codeKey3)
+            }
+        }
+    })
+    jQuery(function() {
+        if (localStorage.bearInput) {
+            var checks = JSON.parse(localStorage.bearInput);
+            jQuery('#hatStore, #clanMenu, #homeDisplay, #biggerHat, #antiScroll, #clickThru, #skinnyStore, #nakedStore, #antiName, #autoSpawn, #classicA, #sandboxA, #brA, #opacityDisplay, #cpsDisplay, #fpsDisplay, #serverDisplay, #gameDisplay, #modDisplay, #bushDisplay, #berserkerDisplay, #jungleDisplay, #crystalDisplay, #spikeDisplay, #immunityDisplay, #boostDisplay, #appleDisplay, #scubaDisplay, #hoodDisplay, #demolistDisplay, #pvpHats, #randomHats').prop('checked', function(i) {
+                return checks[i];
+            });
+        }
+    });
+    jQuery('#hatStore, #clanMenu, #homeDisplay, #biggerHat, #antiScroll, #clickThru, #nakedStore, #skinnyStore, #antiName, #autoSpawn, #classicA, #sandboxA, #brA, #opacityDisplay, #cpsDisplay, #fpsDisplay, #serverDisplay, #gameDisplay, #modDisplay, #bushDisplay, #berserkerDisplay, #jungleDisplay, #crystalDisplay, #spikeDisplay, #immunityDisplay, #boostDisplay, #appleDisplay, #scubaDisplay, #hoodDisplay, #demolistDisplay, #pvpHats, #randomHats').on('change', function() {
+        localStorage.bearInput = JSON.stringify(jQuery('#hatStore, #clanMenu, #homeDisplay, #biggerHat, #antiScroll, #clickThru, #nakedStore, #skinnyStore, #antiName, #autoSpawn, #classicA, #sandboxA, #brA, #opacityDisplay, #cpsDisplay, #fpsDisplay, #serverDisplay, #gameDisplay, #modDisplay, #bushDisplay, #berserkerDisplay, #jungleDisplay, #crystalDisplay, #spikeDisplay, #immunityDisplay, #boostDisplay, #appleDisplay, #scubaDisplay, #hoodDisplay, #demolistDisplay, #pvpHats, #randomHats').map(function() {
+            return this.checked;
+        }).get());
+    });
+</script>
+    <style>
+        .info-text {
+        position: relative;
+    }
+
+    .info-icon {
+        display: inline-block;
+        margin-left: 5px;
+        color: blue;
+        cursor: pointer;
+    }
+
+    .info-box {
+        top: 100%;
+        left: 0;
+        display: none;
+        padding: 5px;
+        background-color: #282d22;
+        border: 1px solid black;
+        color: #dda725;
+        border-radius: 4px;
+        font-size: 10px;
+    }
+
+    .info-text:hover .info-box {
+        display: block;
+    }
+    .inputTxt {
+        width: 270px;
+        border-radius: 10px;
+        color: #dda725;
+        background: black;
+        text-align: center;
+        outline: 0;
+    }
+    /* Styles for toggle container */
+
+    .toggle-container {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 20px;
+    }
+    /* Styles for checkboxes */
+
+    input[type="checkbox"] {
+        display: none;
+    }
+    /* Styles for labels */
+
+    label {
+        display: block;
+        width: 100%;
+        height: 100%;
+        background-color: black;
+        border-radius: 20px;
+        position: relative;
+        cursor: pointer;
+    }
+
+    label::before {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 16px;
+        height: 16px;
+        background-color: #fff;
+        border-radius: 50%;
+        transition: transform 0.3s ease-in-out;
+    }
+
+    input[type="checkbox"]:checked + label::before {
+        transform: translateX(100%);
+    }
+    /* Styles for indicator */
+
+    label::after {
+        content: "";
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        width: 8px;
+        height: 8px;
+        background-color: red;
+        border-radius: 50%;
+    }
+
+    input[type="checkbox"]:checked + label::after {
+        background-color: #36c746;
+    }
+    buttonbear {
+        width: 150px;
+        padding: 5px;
+        display: inline-block;
+        color: rgb(255, 255, 255);
+        text-align: center;
+        box-shadow: rgb(110, 137, 47) 0px 5px 0px inset;
+        border-width: 5px;
+        border-style: solid;
+        border-color: rgb(20, 20, 20);
+        border-image: initial;
+        border-radius: 13px;
+        background: rgb(129, 170, 74);
+        margin-bottom: 5px;
+    }
+    fieldset {
+        border: 3px solid black;
+        background: rgba(20, 20, 20, 0.3);
+        border-radius: 10px;
+        box-shadow: rgba(20, 20, 20, 0.4) 0px 5px 0px inset;
+        text-align: left;
+        padding-bottom: 8px
+    }
+
+    legend {
+        color: white;
+        font-size: 20px;
+    }
+
+    .page {
+        display: none;
+    }
+
+    SettingText {
+        color: #dda725;
+        font-size: 20px;
+        margin-left: 13px;
+    }
+
+    #block-bind {
+        width: 210px;
+        height: 600px;
+        right: 640px;
+        background: rgb(40, 45, 34);
+        box-shadow: rgb(78, 86, 69) 0px 4px 0px inset, rgb(56, 72, 37) 0px -4px 0px inset, rgba(20, 20, 20, 0.3) 0px 5px 0px;
+        top: -5px;
+        border-radius: 15px;
+        border: 5px solid #141414;
+        position: absolute;
+        padding: 10px;
+    }
+
+    #side-bar-menu {
+        z-index: 9999;
+        width: 180px;
+        height: 570px;
+        background: rgba(20, 20, 20, 0.3);
+        border: 3px solid black;
+        border-radius: 15px;
+        text-align: center;
+        padding-top: 10px;
+    }
+
+    .bearMenu {
+        opacity: 1;
+        position: absolute;
+        font-size: 20px;
+        z-index: 9999;
+        padding: 20px;
+        margin: auto;
+        display: none;
+        background: rgb(40, 45, 34);
+        box-shadow: rgb(78, 86, 69) 0px 4px 0px inset, rgb(56, 72, 37) 0px -4px 0px inset, rgba(20, 20, 20, 0.3) 0px 2px 0px 5px, rgba(20, 20, 20, 0.1) 0px 0px 0px 15px;
+        top: 10%;
+        left: 25%;
+        border-radius: 15px;
+        width: 650px;
+        height: 600px;
+        border: 5px solid #141414;
+    }
+
+    select {
+        outline: 0;
+        transition: 1s all;
+        vertical-align: middle;
+        user-select: none;
+        box-sizing: border-box;
+        background: #fff;
+        color: #4A4A4A;
+        border-radius: 10px;
+    }
+
+    .inputTxt {
+        text-shadow: rgb(20 20 20) 4px 0px 0px, rgb(20 20 20) 3.87565px 0.989616px 0px, rgb(20 20 20) 3.51033px 1.9177px 0px, rgb(20 20 20) 2.92676px 2.72656px 0px, rgb(20 20 20) 2.16121px 3.36588px 0px, rgb(20 20 20) 1.26129px 3.79594px 0px, rgb(20 20 20) 0.282949px 3.98998px 0px, rgb(20 20 20) -0.712984px 3.93594px 0px, rgb(20 20 20) -1.66459px 3.63719px 0px, rgb(20 20 20) -2.51269px 3.11229px 0px, rgb(20 20 20) -3.20457px 2.39389px 0px, rgb(20 20 20) -3.69721px 1.52664px 0px, rgb(20 20 20) -3.95997px 0.56448px 0px, rgb(20 20 20) -3.97652px -0.432781px 0px, rgb(20 20 20) -3.74583px -1.40313px 0px, rgb(20 20 20) -3.28224px -2.28625px 0px, rgb(20 20 20) -2.61457px -3.02721px 0px, rgb(20 20 20) -1.78435px -3.57996px 0px, rgb(20 20 20) -0.843183px -3.91012px 0px, rgb(20 20 20) 0.150409px -3.99717px 0px, rgb(20 20 20) 1.13465px -3.8357px 0px, rgb(20 20 20) 2.04834px -3.43574px 0px, rgb(20 20 20) 2.83468px -2.82216px 0px, rgb(20 20 20) 3.44477px -2.03312px 0px, rgb(20 20 20) 3.84068px -1.11766px 0px, rgb(20 20 20) 3.9978px -0.132717px 0px;
+        cursor: text;
+        color: #fff;
+        vertical-align: middle;
+        user-select: none;
+        box-sizing: border-box;
+        text-align: center;
+        outline: 0;
+        display: inline-block;
+        margin-left: 20px;
+        border: none;
+        border: 5px solid rgba(0, 0, 0, 0);
+        box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.08), 0 2px 10px 0 rgba(0, 0, 0, 0.06);
+        border-radius: 10px;
+        transition: all 1s;
+    }
+
+    #block-bind-b {
+        width: 100%;
+        height: 100%;
+        padding: 8px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        background: rgba(20, 20, 20, 0.3);
+        border-radius: 15px;
+        border: 5px solid #141414;
+    }
+    </style>`;
+    $("body").append(modB)
+
+    let cfB = `
+<div class="infoElement" id="infoBox" style="display: block;">
+    <div class="infoElementBox" id="cps" style="display: block;"></div>
+    <div class="infoElementBox" id="fps" style="display: block;"></div>
+    <div class="infoElementBox" id="server-label" style="display: block;"></div>
+    <div class="infoElementBox" id="game-mode-label" style="display: block;"></div>
+</div>
+<style>
+    #infoBox {}
+
+    .infoElement {
+        z-index: 8888;
+        pointer-events: none;
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        background-color: #282d22;
+        width: auto;
+        height: auto;
+        border-width: 5px;
+        border-style: solid;
+        border-color: rgb(20, 20, 20);
+        border-image: initial;
+        padding: 7px;
+        border-radius: 10px;
+    }
+
+    .infoElementBox {
+        pointer-events: none;
+        background: rgb(30, 32, 27);
+        margin-bottom: 5px;
+        border-width: 5px;
+        border-style: solid;
+        border-image: initial;
+        padding: 10px;
+        border: 5px solid #141414;
+        border-radius: 10px;
+        color: #dda725;
+    }
+</style>
+`;
+    $("body").append(cfB)
+
+    let SploopStyle = `
+    <style>
+    #version-container {
+    margin: 0 10px 0 5px;
+    color: #f0ece0;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    padding-right: 20px;
+    border-radius: 7px;
+    background: #1f2419;
+    border: 3px solid #141414;
+    height: 30px;
+    margin-left: 20px;
+    }
+    #version {
+    height: 60px;
+    position: relative;
+    left: -20px;
+    margin-right: -10px;
+    }
+    #chat-wrapper {
+    }
+    .chat-container input {
+    color: yellow;
+    text-align: center;
+    background-color: #000000ba;
+    box-shadow: none;
+    width: 315px;
+    }
+    #play:hover {
+    box-shadow: none;
+    }
+    #play {
+    box-shadow: none;
+    }
+    .background-img-play {
+    display: none;
+    }
+    .game-mode {
+    box-shadow: none;
+    }
+    .dark-blue-button-3-active:hover {
+    box-shadow: none;
+    }
+    .dark-blue-button:hover {
+    box-shadow: none;
+    }
+    #nickname {
+    background: black;
+    text-align: center;
+    }
+    .input {
+    box-shadow: none;
+    color: white;
+    }
+    .menu .content .menu-item {
+    }
+    #main-content {
+    width: auto;
+    }
+    #hat-menu {
+    }
+    #hat_menu_content {
+    padding: initial;
+    }
+    .menu .content .menu-item {
+    border: none !important;
+    }
+    </style>
+    `
+    $("body").append(SploopStyle)
+    // Credits to moomooMod for the Save Settings Code
+    let hatStore = true,
+        clanMenu = true,
+        homeDisplay = false,
+        biggerHat = false,
+        antiScroll = true,
+        clickThru = false,
+        nakedStore = true,
+        skinnyStore = false,
+        antiName = true,
+        autoSpawn = false,
+        classicA = false,
+        sandboxA = true,
+        brA = false,
+        opacityDisplay = false,
+        cpsDisplay = false,
+        framesPerSecondDisplay = false,
+        serverDisplay = true,
+        gameDisplay = true,
+        modDisplay = false,
+        removeRest = false,
+        bushDisplay = true,
+        berserkerDisplay = false,
+        jungleDisplay = true,
+        crystalDisplay = false,
+        spikeDisplay = false,
+        immunityDisplay = true,
+        boostDisplay = true,
+        appleDisplay = true,
+        scubaDisplay = true,
+        hoodDisplay = true,
+        demolistDisplay = false,
+        pvpHats = false,
+        randomHats = false
+
+    let HATSTORE = document.getElementById("hatStore"),
+        CLANMENU = document.getElementById("clanMenu"),
+        HOMEDISPLAY = document.getElementById("homeDisplay"),
+        BIGGERHAT = document.getElementById("biggerHat"),
+        ANTISCROLL = document.getElementById("antiScroll"),
+        CLICKTHRU = document.getElementById("clickThru"),
+        NAKEDSTORE = document.getElementById("nakedStore"),
+        SKINNYSTORE = document.getElementById("skinnyStore"),
+        ANTINAME = document.getElementById("antiName"),
+        AUTOSPAWN = document.getElementById("autoSpawn"),
+        CLASSIC = document.getElementById("classicA"),
+        SANDBOX = document.getElementById("sandboxA"),
+        BR = document.getElementById("brA"),
+        OPACITYDISPLAY = document.getElementById("opacityDisplay"),
+        CPSDISPLAY = document.getElementById("cpsDisplay"),
+        FRAMESPERSECONDDISPLAY = document.getElementById("framesPerSecondDisplay"),
+        SERVERDISPLAY = document.getElementById("serverDisplay"),
+        GAMEDISPLAY = document.getElementById("gameDisplay"),
+        MODDISPLAY = document.getElementById("modDisplay"),
+        REMOVEREST = document.getElementById("removeRest"),
+        BUSHDISPLAY = document.getElementById("bushDisplay"),
+        BERSERKERDISPLAY = document.getElementById("berserkerDisplay"),
+        JUNGLEDISPLAY = document.getElementById("jungleDisplay"),
+        CRYSTALDISPLAY = document.getElementById("crystalDisplay"),
+        SPIKEDISPLAY = document.getElementById("spikeDisplay"),
+        IMMUNITYDISPLAY = document.getElementById("immunityDisplay"),
+        BOOSTDISPLAY = document.getElementById("boostDisplay"),
+        APPLEDISPLAY = document.getElementById("appleDisplay"),
+        SCUBADISPLAY = document.getElementById("scubaDisplay"),
+        HOODDISPLAY = document.getElementById("hoodDisplay"),
+        DEMOLISTDISPLAY = document.getElementById("demolistDisplay"),
+        PVPHATS = document.getElementById("pvpHats"),
+        RANDOMHATS = document.getElementById("randomHats")
+
+    HATSTORE.addEventListener('change', () => {
+        if (this.checked) hatStore = true
+        else hatStore = false
+    })
+    CLANMENU.addEventListener('change', () => {
+        if (this.checked) clanMenu = true
+        else clanMenu = false
+    })
+    HOMEDISPLAY.addEventListener('change', () => {
+        if (this.checked) homeDisplay = true
+        else homeDisplay = false
+    })
+    BIGGERHAT.addEventListener('change', () => {
+        if (this.checked) biggerHat = true
+        else biggerHat = false
+    })
+    ANTISCROLL.addEventListener('change', () => {
+        if (this.checked) antiScroll = true
+        else antiScroll = false
+    })
+    CLICKTHRU.addEventListener('change', () => {
+        if (this.checked) clickThru = true
+        else clickThru = false
+    })
+    NAKEDSTORE.addEventListener('change', () => {
+        if (this.checked) nakedStore = true
+        else nakedStore = false
+    })
+    SKINNYSTORE.addEventListener('change', () => {
+        if (this.checked) skinnyStore = true
+        else skinnyStore = false
+    })
+    ANTINAME.addEventListener('change', () => {
+        if (this.checked) antiName = true
+        else antiName = false
+    })
+    AUTOSPAWN.addEventListener('change', () => {
+        if (this.checked) autoSpawn = true
+        else autoSpawn = false
+    })
+    CLASSIC.addEventListener('change', () => {
+        if (this.checked) classicA = true
+        else classicA = false
+    })
+    SANDBOX.addEventListener('change', () => {
+        if (this.checked) sandboxA = true
+        else sandboxA = false
+    })
+    BR.addEventListener('change', () => {
+        if (this.checked) brA = true
+        else brA = false
+    })
+    OPACITYDISPLAY.addEventListener('change', () => {
+        if (this.checked) opacityDisplay = true
+        else opacityDisplay = false
+    })
+    CPSDISPLAY.addEventListener('change', () => {
+        if (this.checked) cpsDisplay = true
+        else cpsDisplay = false
+    })
+    FRAMESPERSECONDDISPLAY.addEventListener('change', () => {
+        if (this.checked) framesPerSecondDisplay = true
+        else framesPerSecondDisplay = false
+    })
+    SERVERDISPLAY.addEventListener('change', () => {
+        if (this.checked) serverDisplay = true
+        else serverDisplay = false
+    })
+    GAMEDISPLAY.addEventListener('change', () => {
+        if (this.checked) gameDisplay = true
+        else gameDisplay = false
+    })
+    MODDISPLAY.addEventListener('change', () => {
+        if (this.checked) modDisplay = true
+        else modDisplay = false
+    })
+    REMOVEREST.addEventListener('change', () => {
+        if (this.checked) removeRest = true
+        else removeRest = false
+    })
+    BUSHDISPLAY.addEventListener('change', () => {
+        if (this.checked) bushDisplay = true
+        else bushDisplay = false
+    })
+    BERSERKERDISPLAY.addEventListener('change', () => {
+        if (this.checked) berserkerDisplay = true
+        else berserkerDisplay = false
+    })
+    JUNGLEDISPLAY.addEventListener('change', () => {
+        if (this.checked) jungleDisplay = true
+        else jungleDisplay = false
+    })
+    CRYSTALDISPLAY.addEventListener('change', () => {
+        if (this.checked) crystalDisplay = true
+        else crystalDisplay = false
+    })
+    SPIKEDISPLAY.addEventListener('change', () => {
+        if (this.checked) spikeDisplay = true
+        else spikeDisplay = false
+    })
+    IMMUNITYDISPLAY.addEventListener('change', () => {
+        if (this.checked) immunityDisplay = true
+        else immunityDisplay = false
+    })
+    BOOSTDISPLAY.addEventListener('change', () => {
+        if (this.checked) boostDisplay = true
+        else boostDisplay = false
+    })
+    APPLEDISPLAY.addEventListener('change', () => {
+        if (this.checked) appleDisplay = true
+        else appleDisplay = false
+    })
+    SCUBADISPLAY.addEventListener('change', () => {
+        if (this.checked) scubaDisplay = true
+        else scubaDisplay = false
+    })
+    HOODDISPLAY.addEventListener('change', () => {
+        if (this.checked) hoodDisplay = true
+        else hoodDisplay = false
+    })
+    DEMOLISTDISPLAY.addEventListener('change', () => {
+        if (this.checked) demolistDisplay = true
+        else demolistDisplay = false
+    })
+    PVPHATS.addEventListener('change', () => {
+        if (this.checked) pvpHats = true
+        else pvpHats = false
+    })
+    RANDOMHATS.addEventListener('change', () => {
+        if (this.checked) randomHats = true
+        else randomHats = false
+    })
+    function handleKeyPress(event) {
+        if (event.code === "Space" && antiScrollcheckBox.checked === true) {
+            event.preventDefault();
+        }
+    }
+    const hatStoreBox = document.getElementById("hat-menu")
+    const clanMenuBox = document.getElementById("clan-menu")
+    const mainMenuBox = document.getElementById("game-middle-main")
+    const hatStoreContentBox = document.getElementById("hat_menu_content")
+    const nicknameBox = document.getElementById("nickname-container");
+    const informationBox = document.getElementById("infoBox")
+    const cpsBox = document.getElementById("cps")
+    const fpsBox = document.getElementById("fps")
+    const serverBox = document.getElementById("server-label")
+    const gameBox = document.getElementById("game-mode-label")
+    const ModMenu = document.getElementById("bearModMenu")
+    const playBtn = document.getElementById("play")
+    const sideBarMenu = document.getElementById("block-bind")
+    const hat0 = document.getElementsByClassName("menu-item").item(0)// bush Hat
+    const hat1 = document.getElementsByClassName("menu-item").item(1)// berserker Hat
+    const hat2 = document.getElementsByClassName("menu-item").item(2)// Jungle Hat
+    const hat3 = document.getElementsByClassName("menu-item").item(3)// Crystal Hat
+    const hat4 = document.getElementsByClassName("menu-item").item(4)// Spike Hat
+    const hat5 = document.getElementsByClassName("menu-item").item(5)// Immunity Hat
+    const hat6 = document.getElementsByClassName("menu-item").item(6)// Boost Hat
+    const hat7 = document.getElementsByClassName("menu-item").item(7)// Apple Hat
+    const hat8 = document.getElementsByClassName("menu-item").item(8)// Scuba Hat
+    const hat9 = document.getElementsByClassName("menu-item").item(9)// Hood Hat
+    const hat10 = document.getElementsByClassName("menu-item").item(10)// Demolist Hat
+    const hatDescriptions = [
+        document.getElementsByClassName("column-flex column-flex-extra").item(0),
+        document.getElementsByClassName("column-flex column-flex-extra").item(1),
+        document.getElementsByClassName("column-flex column-flex-extra").item(2),
+        document.getElementsByClassName("column-flex column-flex-extra").item(3),
+        document.getElementsByClassName("column-flex column-flex-extra").item(4),
+        document.getElementsByClassName("column-flex column-flex-extra").item(5),
+        document.getElementsByClassName("column-flex column-flex-extra").item(6),
+        document.getElementsByClassName("column-flex column-flex-extra").item(7),
+        document.getElementsByClassName("column-flex column-flex-extra").item(8),
+        document.getElementsByClassName("column-flex column-flex-extra").item(9),
+        document.getElementsByClassName("column-flex column-flex-extra").item(10)
+    ]
+    const hatPrices = [
+        document.getElementsByClassName("pricing hat_price_tag").item(0),
+        document.getElementsByClassName("pricing hat_price_tag").item(1),
+        document.getElementsByClassName("pricing hat_price_tag").item(2),
+        document.getElementsByClassName("pricing hat_price_tag").item(3),
+        document.getElementsByClassName("pricing hat_price_tag").item(4),
+        document.getElementsByClassName("pricing hat_price_tag").item(5),
+        document.getElementsByClassName("pricing hat_price_tag").item(6),
+        document.getElementsByClassName("pricing hat_price_tag").item(7),
+        document.getElementsByClassName("pricing hat_price_tag").item(8),
+        document.getElementsByClassName("pricing hat_price_tag").item(9),
+        document.getElementsByClassName("pricing hat_price_tag").item(10)
+    ]
+    const hatButtons = [
+        document.getElementsByClassName("green-button text-shadowed-3 action hat_action_button").item(0),
+        document.getElementsByClassName("green-button text-shadowed-3 action hat_action_button").item(1),
+        document.getElementsByClassName("green-button text-shadowed-3 action hat_action_button").item(2),
+        document.getElementsByClassName("green-button text-shadowed-3 action hat_action_button").item(3),
+        document.getElementsByClassName("green-button text-shadowed-3 action hat_action_button").item(4),
+        document.getElementsByClassName("green-button text-shadowed-3 action hat_action_button").item(5),
+        document.getElementsByClassName("green-button text-shadowed-3 action hat_action_button").item(6),
+        document.getElementsByClassName("green-button text-shadowed-3 action hat_action_button").item(7),
+        document.getElementsByClassName("green-button text-shadowed-3 action hat_action_button").item(8),
+        document.getElementsByClassName("green-button text-shadowed-3 action hat_action_button").item(9),
+        document.getElementsByClassName("green-button text-shadowed-3 action hat_action_button").item(10)
+    ]
+    const hatTitle = document.getElementsByClassName("pop-title text-shadowed-4").item(0)
+    const sandbox = document.getElementById("sandbox-mode")
+    const classic = document.getElementById("ffa-mode")
+    const br = document.getElementById("battleroyale-mode")
+    const popUi = document.getElementById("pop-ui")
+    const popSettings = document.getElementById("pop-settings")
+    const homeScreen = document.getElementById("homepage");
+    const chatBox = document.getElementById("chat-wrapper");
+    const grid = document.getElementById("grid-toggle")
+    const ping = document.getElementById("display-ping-toggle")
+    const antiScrollcheckBox = document.getElementById("antiScroll");
+    const settingsBox = document.getElementById("top-wrap-left");
+
+    // /=\ Transparent HatStore /=\
+    setInterval(() => {
+        if (document.getElementById("hatStore").checked == true) {
+            hatStoreBox.style.opacity = "0.4"
+        } else {
+            hatStoreBox.style.opacity = "1"
+        }
+    })
+    // /=\ Transparent ClanMenu /=\
+    setInterval(() => {
+        if (document.getElementById("clanMenu").checked == true) {
+            clanMenuBox.style.opacity = "0.4"
+        } else {
+            clanMenuBox.style.opacity = "1"
+        }
+    })
+    // /=\ Transparent HomePage /=\
+    setInterval(() => {
+        if (document.getElementById("homeDisplay").checked == true) {
+            mainMenuBox.style.opacity = "0.4"
+        } else {
+            mainMenuBox.style.opacity = "1"
+        }
+    })
+    // /=\ Bigger Hat Store /=\
+    setInterval(() => {
+        if (document.getElementById("biggerHat").checked == true) {
+            document.getElementById("pvpHats").checked = false
+            document.getElementById("randomHats").checked = false
+            document.getElementById("pvpHatsImmunity").checked = false
+            hatStoreBox.style.height = "700px";
+            document.getElementById("bushDisplay").checked = false
+            document.getElementById("jungleDisplay").checked = false
+            document.getElementById("immunityDisplay").checked = false
+            document.getElementById("boostDisplay").checked = false
+            document.getElementById("appleDisplay").checked = false
+            document.getElementById("scubaDisplay").checked = false
+            document.getElementById("hoodDisplay").checked = false
+            document.getElementById("berserkerDisplay").checked = false
+            document.getElementById("crystalDisplay").checked = false
+            document.getElementById("spikeDisplay").checked = false
+            document.getElementById("demolistDisplay").checked = false
+            document.getElementById("antiScroll").checked = false
+        } else {
+            hatStoreBox.style.height = "367px";
+        }
+    })
+    // /=\ Anti Scroll /=\
+    setInterval(() => {
+        if (document.getElementById("antiScroll").checked == true) {
+            document.getElementById("biggerHat").checked = false
+            document.getElementById("pvpHats").checked = false
+            document.getElementById("pvpHatsImmunity").checked = false
+            document.addEventListener("keydown", handleKeyPress);
+        } else {
+            document.removeEventListener("keydown", handleKeyPress);
+        }
+    })
+    // /=\ naked hat Store /=\
+    setInterval(() => {
+        if (document.getElementById("nakedStore").checked == true) {
+            hatStoreBox.style.boxShadow = "none";
+            hatStoreBox.style.border = "none";
+            hatStoreBox.style.background = "none";
+            hatStoreContentBox.style.background = "none";
+            hatStoreContentBox.style.border = "none";
+            hatStoreContentBox.style.boxShadow = "none"
+            hatDescriptions[0].style.display = "none"
+            hatDescriptions[1].style.display = "none"
+            hatDescriptions[2].style.display = "none"
+            hatDescriptions[3].style.display = "none"
+            hatDescriptions[4].style.display = "none"
+            hatDescriptions[5].style.display = "none"
+            hatDescriptions[6].style.display = "none"
+            hatDescriptions[7].style.display = "none"
+            hatDescriptions[8].style.display = "none"
+            hatDescriptions[9].style.display = "none"
+            hatDescriptions[10].style.display = "none"
+            hatPrices[0].style.display = "none"
+            hatPrices[1].style.display = "none"
+            hatPrices[2].style.display = "none"
+            hatPrices[3].style.display = "none"
+            hatPrices[4].style.display = "none"
+            hatPrices[5].style.display = "none"
+            hatPrices[6].style.display = "none"
+            hatPrices[7].style.display = "none"
+            hatPrices[8].style.display = "none"
+            hatPrices[9].style.display = "none"
+            hatPrices[10].style.display = "none"
+            hatButtons[0].style.background = "none"
+            hatButtons[0].style.boxShadow = "none"
+            hatButtons[1].style.background = "none"
+            hatButtons[1].style.boxShadow = "none"
+            hatButtons[2].style.background = "none"
+            hatButtons[2].style.boxShadow = "none"
+            hatButtons[3].style.background = "none"
+            hatButtons[3].style.boxShadow = "none"
+            hatButtons[4].style.background = "none"
+            hatButtons[4].style.boxShadow = "none"
+            hatButtons[5].style.background = "none"
+            hatButtons[5].style.boxShadow = "none"
+            hatButtons[6].style.background = "none"
+            hatButtons[6].style.boxShadow = "none"
+            hatButtons[7].style.background = "none"
+            hatButtons[7].style.boxShadow = "none"
+            hatButtons[8].style.background = "none"
+            hatButtons[8].style.boxShadow = "none"
+            hatButtons[9].style.background = "none"
+            hatButtons[9].style.boxShadow = "none"
+            hatButtons[10].style.background = "none"
+            hatButtons[10].style.boxShadow = "none"
+            hatTitle.innerText = "Naked: ON";
+        } else {
+            hatStoreBox.style.boxShadow = "rgb(78, 86, 69) 0px 4px 0px inset, rgb(56, 72, 37) 0px -4px 0px inset, rgba(20, 20, 20, 0.3) 0px 2px 0px 5px, rgba(20, 20, 20, 0.1) 0px 0px 0px 15px";
+            hatStoreBox.style.border = "5px solid black";
+            hatStoreBox.style.background = "rgb(40 45 34 / 60%)";
+            hatStoreContentBox.style.background = "rgba(20, 20, 20, 0.3)";
+            hatStoreContentBox.style.border = "4px solid black";
+            hatStoreContentBox.style.boxShadow = "rgba(20, 20, 20, 0.4) 0px 5px 0px inset"
+            hatDescriptions[0].style.display = "flex"
+            hatDescriptions[1].style.display = "flex"
+            hatDescriptions[2].style.display = "flex"
+            hatDescriptions[3].style.display = "flex"
+            hatDescriptions[4].style.display = "flex"
+            hatDescriptions[5].style.display = "flex"
+            hatDescriptions[6].style.display = "flex"
+            hatDescriptions[7].style.display = "flex"
+            hatDescriptions[8].style.display = "flex"
+            hatDescriptions[9].style.display = "flex"
+            hatDescriptions[10].style.display = "flex"
+            hatPrices[0].style.display = "flex"
+            hatPrices[1].style.display = "flex"
+            hatPrices[2].style.display = "flex"
+            hatPrices[3].style.display = "flex"
+            hatPrices[4].style.display = "flex"
+            hatPrices[5].style.display = "flex"
+            hatPrices[6].style.display = "flex"
+            hatPrices[7].style.display = "flex"
+            hatPrices[8].style.display = "flex"
+            hatPrices[9].style.display = "flex"
+            hatPrices[10].style.display = "flex"
+            hatButtons[0].style.background = "rgb(150, 185, 67)"
+            hatButtons[0].style.boxShadow = "rgb(128, 152, 54) 0px -5px 0px inset"
+            hatButtons[1].style.background = "rgb(150, 185, 67)"
+            hatButtons[1].style.boxShadow = "rgb(128, 152, 54) 0px -5px 0px inset"
+            hatButtons[2].style.background = "rgb(150, 185, 67)"
+            hatButtons[2].style.boxShadow = "rgb(128, 152, 54) 0px -5px 0px inset"
+            hatButtons[3].style.background = "rgb(150, 185, 67)"
+            hatButtons[3].style.boxShadow = "rgb(128, 152, 54) 0px -5px 0px inset"
+            hatButtons[4].style.background = "rgb(150, 185, 67)"
+            hatButtons[4].style.boxShadow = "rgb(128, 152, 54) 0px -5px 0px inset"
+            hatButtons[5].style.background = "rgb(150, 185, 67)"
+            hatButtons[5].style.boxShadow = "rgb(128, 152, 54) 0px -5px 0px inset"
+            hatButtons[6].style.background = "rgb(150, 185, 67)"
+            hatButtons[6].style.boxShadow = "rgb(128, 152, 54) 0px -5px 0px inset"
+            hatButtons[7].style.background = "rgb(150, 185, 67)"
+            hatButtons[7].style.boxShadow = "rgb(128, 152, 54) 0px -5px 0px inset"
+            hatButtons[8].style.background = "rgb(150, 185, 67)"
+            hatButtons[8].style.boxShadow = "rgb(128, 152, 54) 0px -5px 0px inset"
+            hatButtons[9].style.background = "rgb(150, 185, 67)"
+            hatButtons[9].style.boxShadow = "rgb(128, 152, 54) 0px -5px 0px inset"
+            hatButtons[10].style.background = "rgb(150, 185, 67)"
+            hatButtons[10].style.boxShadow = "rgb(128, 152, 54) 0px -5px 0px inset"
+            hatTitle.innerText = "Hats"
+        }
+    })
+    // /=\ Skinny Hat Store /=\
+    setInterval(() => {
+        if (document.getElementById("skinnyStore").checked == true) {
+            document.getElementById("nakedStore").checked = true
+            hatStoreBox.style.width = "200px"
+        } else {
+            hatStoreBox.style.width = "500px"
+        }
+    })
+    // /=\ AntiNameChange /=\
+    setInterval(() => {
+        if (document.getElementById("antiName").checked == true) {
+            nicknameBox.style.pointerEvents = "none"
+        } else {
+            nicknameBox.style.pointerEvents = "auto"
+        }
+    })
+    // /=\ Auto Respawn /=\
+    setInterval(() => {
+        if (document.getElementById("autoSpawn").checked == true) {
+            if (homeScreen.style.display === "flex") {
+                playBtn.click()
+            }
+        }
+    })
+    // /=\ classic Toggle /=\
+    setInterval(() => {
+        if (document.getElementById("classicA").checked == true) {
+            document.getElementById("sandboxA").checked = false
+            document.getElementById("brA").checked = false
+            classic.click()
+        }
+    })
+    // /=\ sandbox Toggle /=\
+    setInterval(() => {
+        if (document.getElementById("sandboxA").checked == true) {
+            document.getElementById("classicA").checked = false
+            document.getElementById("brA").checked = false
+            sandbox.click()
+        }
+    })
+    // /=\ battleRoyale Toggle
+    setInterval(() => {
+        if (document.getElementById("brA").checked == true) {
+            document.getElementById("classicA").checked = false
+            document.getElementById("sandboxA").checked = false
+            br.click()
+        }
+    })
+    // /=\ Transparent InfoBox /=\
+    setInterval(() => {
+        if (document.getElementById("opacityDisplay").checked == true) {
+            informationBox.style.opacity = "0.4"
+        } else {
+            informationBox.style.opacity = "1"
+        }
+    })
+    // /=\ hide Cps /=\
+    setInterval(() => {
+        if (document.getElementById("cpsDisplay").checked == true) {
+            cpsBox.style.display = "none"
+        } else {
+            cpsBox.style.display = "block"
+        }
+    })
+    // /=\ hide Fps /=\
+    setInterval(() => {
+        if (document.getElementById("framesPerSecondDisplay").checked == true) {
+            fpsBox.style.display = "none"
+        } else {
+            fpsBox.style.display = "block"
+        }
+    })
+    // /=\ hide Server /=\
+    setInterval(() => {
+        if (document.getElementById("serverDisplay").checked == true) {
+            serverBox.style.display = "none"
+        } else {
+            serverBox.style.display = "block"
+        }
+    })
+    // /=\ hide gameMode /=\
+    setInterval(() => {
+        if (document.getElementById("gameDisplay").checked == true) {
+            gameBox.style.display = "none"
+        } else {
+            gameBox.style.display = "block"
+        }
+    })
+    // /=\ Transparent ModMenu /=\
+    setInterval(() => {
+        if (document.getElementById("modDisplay").checked == true) {
+            ModMenu.style.background = "rgba(40, 45, 34, 0.31)"
+            sideBarMenu.style.background = "rgba(40, 45, 34, 0.31)"
+        } else {
+            ModMenu.style.background = "rgb(40, 45, 34)"
+            sideBarMenu.style.background = "rgb(40, 45, 34)"
+        }
+    })
+    // /=\ Remove Hats /=\
+    setInterval(() => {
+        if (document.getElementById("bushDisplay").checked == true) {
+            hat0.style.display = "none"
+        } else {
+            hat0.style.display = "flex"
+        }
+    })
+    setInterval(() => {
+        if (document.getElementById("berserkerDisplay").checked == true) {
+            hat1.style.display = "none"
+        } else {
+            hat1.style.display = "flex"
+        }
+    })
+    setInterval(() => {
+        if (document.getElementById("jungleDisplay").checked == true) {
+            hat2.style.display = "none"
+        } else {
+            hat2.style.display = "flex"
+        }
+    })
+    setInterval(() => {
+        if (document.getElementById("crystalDisplay").checked == true) {
+            hat3.style.display = "none"
+        } else {
+            hat3.style.display = "flex"
+        }
+    })
+    setInterval(() => {
+        if (document.getElementById("spikeDisplay").checked == true) {
+            hat4.style.display = "none"
+        } else {
+            hat4.style.display = "flex"
+        }
+    })
+    setInterval(() => {
+        if (document.getElementById("immunityDisplay").checked == true) {
+            hat5.style.display = "none"
+        } else {
+            hat5.style.display = "flex"
+        }
+    })
+    setInterval(() => {
+        if (document.getElementById("boostDisplay").checked == true) {
+            hat6.style.display = "none"
+        } else {
+            hat6.style.display = "flex"
+        }
+    })
+    setInterval(() => {
+        if (document.getElementById("appleDisplay").checked == true) {
+            hat7.style.display = "none"
+        } else {
+            hat7.style.display = "flex"
+        }
+    })
+    setInterval(() => {
+        if (document.getElementById("scubaDisplay").checked == true) {
+            hat8.style.display = "none"
+        } else {
+            hat8.style.display = "flex"
+        }
+    })
+    setInterval(() => {
+        if (document.getElementById("hoodDisplay").checked == true) {
+            hat9.style.display = "none"
+        } else {
+            hat9.style.display = "flex"
+        }
+    })
+    setInterval(() => {
+        if (document.getElementById("demolistDisplay").checked == true) {
+            hat10.style.display = "none"
+        } else {
+            hat10.style.display = "flex"
+        }
+    })
+    // Pvp Hats Only /=\
+    setInterval(() => {
+        if (document.getElementById("pvpHats").checked == true) {
+            document.getElementById("randomHats").checked = false
+            document.getElementById("antiScroll").checked = false
+            document.getElementById("biggerHat").checked = false
+            document.getElementById("bushDisplay").checked = true
+            document.getElementById("jungleDisplay").checked = true
+            document.getElementById("immunityDisplay").checked = true
+            document.getElementById("boostDisplay").checked = true
+            document.getElementById("appleDisplay").checked = true
+            document.getElementById("scubaDisplay").checked = true
+            document.getElementById("hoodDisplay").checked = true
+            document.getElementById("berserkerDisplay").checked = false
+            document.getElementById("crystalDisplay").checked = false
+            document.getElementById("spikeDisplay").checked = false
+            document.getElementById("demolistDisplay").checked = false
+        }
+    })
+    // /=\ Pvp Hats with Immunity Gear /=\
+    setInterval(() => {
+        if (document.getElementById("pvpHatsImmunity").checked == true) {
+            document.getElementById("pvpHats").checked = false
+            document.getElementById("randomHats").checked = false
+            document.getElementById("antiScroll").checked = false
+            document.getElementById("biggerHat").checked = false
+            document.getElementById("bushDisplay").checked = true
+            document.getElementById("jungleDisplay").checked = true
+            document.getElementById("immunityDisplay").checked = false
+            document.getElementById("boostDisplay").checked = true
+            document.getElementById("appleDisplay").checked = true
+            document.getElementById("scubaDisplay").checked = true
+            document.getElementById("hoodDisplay").checked = true
+            document.getElementById("berserkerDisplay").checked = false
+            document.getElementById("crystalDisplay").checked = true
+            document.getElementById("spikeDisplay").checked = false
+            document.getElementById("demolistDisplay").checked = false
+        }
+    })
+    // /=\ Random Hats Only /=\
+    setInterval(() => {
+        if (document.getElementById("randomHats").checked == true) {
+            document.getElementById("pvpHats").checked = false
+            document.getElementById("berserkerDisplay").checked = true
+            document.getElementById("crystalDisplay").checked = true
+            document.getElementById("spikeDisplay").checked = true
+            document.getElementById("demolistDisplay").checked = true
+            document.getElementById("biggerHat").checked = false
+            document.getElementById("bushDisplay").checked = false
+            document.getElementById("jungleDisplay").checked = false
+            document.getElementById("immunityDisplay").checked = false
+            document.getElementById("boostDisplay").checked = false
+            document.getElementById("appleDisplay").checked = false
+            document.getElementById("scubaDisplay").checked = false
+            document.getElementById("hoodDisplay").checked = false
+        }
+    })
+    // /=\ Auto Grid-toggle /=\
+    setInterval(() => {
+        if (document.getElementById("grid-toggle").checked == true) {
+            grid.click()
+        }
+    })
+    // /=\ Move InfoBox if Ping toggled ON
+    setInterval(() => {
+        if (document.getElementById("display-ping-toggle").checked == true) {
+            informationBox.style.left = "75px"
+        }
+    })
+    // /=\ Move InfoBox if Ping toggled OFF
+    setInterval(() => {
+        if (document.getElementById("display-ping-toggle").checked == false) {
+            informationBox.style.left = "15px"
+        }
+    })
+    // /=\ Remove InfoBox if all Info toggled OFF /=\
+    setInterval(() => {
+        if (document.getElementById("cpsDisplay").checked == true && document.getElementById("framesPerSecondDisplay").checked == true && document.getElementById("serverDisplay").checked == true && document.getElementById("gameDisplay").checked == true) {
+            informationBox.style.display = "none"
+        }
+    })
+    // /=\ Create Version Box /=\
+    var VersionDiv = `<div id="version-container"><img id="version" draggable="false"src="https://media.discordapp.net/attachments/1077687137455046718/1122722360420728913/DaB34R.png"> <div id="version-value">Version: ${versionN}</div></div>`;
+    var targetdiv = $('div#logged-content');
+    targetdiv.append(VersionDiv);
+    // /=\ Change Chat Box Inner Text /=\
+    setInterval(() => {
+        setTimeout(() => {
+            document.getElementById('chat').placeholder = "MESSAGE";
+            setTimeout(() => {
+                document.getElementById('chat').placeholder = "_M_E_S_S_A_G_E_";
+                setTimeout(() => {
+                    document.getElementById('chat').placeholder = "-M-E-S-S-A-G-E-";
+                    setTimeout(() => {
+                        document.getElementById('chat').placeholder = ".M.E.S.S.A.G.E.";
+                        setTimeout(() => {
+                            document.getElementById('chat').placeholder = "=M=E=S=S=A=G=E=";
+                        }, 200);
+                    }, 200);
+                }, 200);
+            }, 200);
+        }, 200);
+    }, 1100)
+
+    // /=\ Delete Elements /=\
+    const elementsToRemove = [
+        'game-left-content-main',
+        'game-right-content-main',
+        'game-bottom-content',
+        'right-content',
+        'left-content',
+        'skin-message',
+        'shop-message',
+        'cross-promo',
+        'google_play',
+        'landscape',
+        'waiting',
+        'policy',
+        'logo',
+    ];
+
+    elementsToRemove.forEach(function(elementId) {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.remove();
+        }
+    });
+
+    // /=\ Access homepage /=\
+    function handleArrowRightKeyPress(event) {
+        if (ModMenu.style.display === "none" && popUi.style.display === "none") {
+            if (event.code === $("#homeBind").val()) {
+                if (homeScreen) {
+                    if (homeScreen.style.display === "flex") {
+                        homeScreen.style.display = "none";
+                        settingsBox.style.display = "flex"
+                    } else {
+                        homeScreen.style.display = "flex";
+                        settingsBox.style.display = "none"
+                    }
+                }
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        }
+    }
+    document.addEventListener("keydown", handleArrowRightKeyPress);
+
+    // /=\ Access Settings /=\
+    function handleArrowLeftKeyPress(event) {
+        if (homeScreen.style.display === "none" && ModMenu.style.display === "none") {
+            if (event.code === $("#settingsBind").val()) {
+                if (popUi && popSettings) {
+                    if (popUi.style.display === "flex") {
+                        popUi.style.display = "none";
+                        popSettings.style.display = "none";
+                    } else {
+                        popUi.style.display = "flex";
+                        popUi.classList.add("fade-in")
+                        popSettings.style.display = "flex";
+                        popSettings.classList.add("fade-in")
+                        popUi.style.background = "none"
+                        popSettings.style.background = "none"
+                        popSettings.style.boxShadow = "none"
+                        popSettings.style.border = "2px solid black"
+                    }
+                }
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        }
+    }
+
+    document.addEventListener("keydown", handleArrowLeftKeyPress);
+    // /=\ ModMenu toggle /=\
+    function handleArrowUpKeyPress(event) {
+        if (popUi.style.display === "none") {
+            if (event.code === $("#modBind").val()) {
+                if (ModMenu) {
+                    if (ModMenu.style.display === "block") {
+                        ModMenu.style.display = "none"
+                    } else {
+                        ModMenu.style.display = "block"
+                    }
+                }
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        }
+    }
+    document.addEventListener("keydown", handleArrowUpKeyPress);
+    // /=\ Info Box /=\
+    function handleArrowDownKeyPress(event) {
+        if (event.code === $("#infoBind").val()) {
+            if (informationBox) {
+                if (informationBox.style.display === "block") {
+                    informationBox.style.display = "none"
+                } else {
+                    informationBox.style.display = "block"
+                }
+            }
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    }
+    document.addEventListener("keydown", handleArrowDownKeyPress);
+
+    // /=\ Server and Gamemode Label /=\
+    var serverLabel = document.getElementById("server-label");
+    var gameModeLabel = document.getElementById("game-mode-label");
+
+    serverLabel.textContent = "Server: Unknown";
+    gameModeLabel.textContent = "Game Mode: Unknown";
+
+    function updateLabels() {
+        var serverSelect = document.getElementById("server-select");
+        var serverName = "";
+
+        for (var i = 0; i < serverSelect.options.length; i++) {
+            var option = serverSelect.options[i];
+            if (option.selected) {
+                serverName = option.textContent;
+                break;
+            }
+        }
+
+        if (serverName !== "") {
+            serverLabel.textContent = "Server: " + serverName;
+        } else {
+            serverLabel.textContent = "Server: Connecting";
+        }
+
+
+        var ffaMode = document.getElementById("ffa-mode");
+        var sandboxMode = document.getElementById("sandbox-mode");
+        var battleRoyaleMode = document.getElementById("battleroyale-mode");
+        var smallWaiting = document.getElementById("small-waiting");
+
+        if (smallWaiting.style.display === "flex") {
+            gameModeLabel.textContent = "Game Mode: Connecting";
+        } else if (ffaMode.classList.contains("dark-blue-button-3-active")) {
+            gameModeLabel.textContent = "Game Mode: Classic";
+        } else if (sandboxMode.classList.contains("dark-blue-button-3-active")) {
+            gameModeLabel.textContent = "Game Mode: SandBox";
+        } else if (battleRoyaleMode.classList.contains("dark-blue-button-3-active")) {
+            gameModeLabel.textContent = "Game Mode: BattleRoyale";
+        } else {
+            gameModeLabel.textContent = "Game Mode: Unknown";
+        }
+    }
+
+    updateLabels();
+    setInterval(updateLabels, 500);
+
+    // /=\ Fps and Cps [A really terrible Cps Counter C:]/=\
+    var frameCount = 0;
+    var fpsStartTime = 0;
+    var fpsDisplay = document.getElementById("fps");
+
+    function updateDisplay() {
+            var currentTime = new Date().getTime();
+            var fpsElapsedTime = (currentTime - fpsStartTime) / 1000;
+            var fps = frameCount / fpsElapsedTime;
+            fpsDisplay.innerHTML = "FPS: " + fps.toFixed(0);
+            frameCount = 0;
+            fpsStartTime = currentTime;
+        }
+    function updateFrame() {
+        frameCount++;
+        requestAnimationFrame(updateFrame);
+    }
+
+    setInterval(updateDisplay, 1000);
+    updateFrame();
+
+    var cps = 0;
+
+    document.addEventListener("keydown", function(event) {
+        if (event.keyCode === 32) {
+            cps++
+        }
+    });
+
+    document.addEventListener("mousedown", function(event) {
+        if (event.button === 0 || event.button === 2) {
+            cps++
+        }
+    });
+
+    var cpsElement = document.getElementById("cps");
+
+    function updateCPS() {
+        cpsElement.innerHTML = "CPS: " + cps;
+        cps = 0;
+    }
+
+    setInterval(updateCPS, 1000);
+    // /=\ Reset Mod Menu Keysbinds/=\
+})();
